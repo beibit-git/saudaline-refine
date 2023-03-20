@@ -6,11 +6,10 @@ import routerProvider, {
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import { newEnforcer } from "casbin";
+import { AntdInferencer } from "@refinedev/inferencer/antd";
 import "@refinedev/antd/dist/reset.css";
 
-import { model, adapter } from "accessControl";
-import { Header } from "components/header";
+import { Header, Title } from "components";
 import {
   CategoryList,
   CategoryCreate,
@@ -18,44 +17,18 @@ import {
   CategoryShow,
 } from "pages/categories";
 import authProvider from "providers/authProvider";
+import accessControlProvider from "providers/accessControlProvider";
+import Constants from "common/constants";
 
-const API_URL = "https://api.fake-rest.refine.dev";
-
+const API_URL = Constants.API_BASE_URL!;
 const App: React.FC = () => {
-  const role = "editor";
-
   return (
     <BrowserRouter basename="/admin">
       <Refine
         routerProvider={routerProvider}
         dataProvider={dataProvider(API_URL)}
         authProvider={authProvider}
-        accessControlProvider={{
-          can: async ({ action, params, resource }) => {
-            const enforcer = await newEnforcer(model, adapter);
-            if (action === "delete" || action === "edit" || action === "show") {
-              return Promise.resolve({
-                can: await enforcer.enforce(
-                  role,
-                  `${resource}/${params?.id}`,
-                  action
-                ),
-              });
-            }
-            if (action === "field") {
-              return Promise.resolve({
-                can: await enforcer.enforce(
-                  role,
-                  `${resource}/${params?.field}`,
-                  action
-                ),
-              });
-            }
-            return {
-              can: await enforcer.enforce(role, resource, action),
-            };
-          },
-        }}
+        accessControlProvider={accessControlProvider}
         resources={[
           {
             name: "categories",
@@ -63,6 +36,21 @@ const App: React.FC = () => {
             show: "/categories/show/:id",
             create: "/categories/create",
             edit: "/categories/edit/:id",
+            meta: {
+              label: "Категории",
+              canDelete: true,
+            },
+          },
+          {
+            name: "region",
+            list: "/region",
+            show: "/region/show/:id",
+            create: "/region/create",
+            edit: "/region/edit/:id",
+            meta: {
+              label: "Регионы",
+              canDelete: true,
+            },
           },
         ]}
         notificationProvider={notificationProvider}
@@ -74,7 +62,7 @@ const App: React.FC = () => {
         <Routes>
           <Route
             element={
-              <Layout Header={() => <Header role={role} />}>
+              <Layout Title={Title} Header={() => <Header />}>
                 <CanAccess>
                   <Outlet />
                 </CanAccess>
@@ -84,10 +72,16 @@ const App: React.FC = () => {
             <Route index element={<NavigateToResource resource="posts" />} />
 
             <Route path="/categories">
-              <Route index element={<CategoryList />} />
-              <Route path="create" element={<CategoryCreate />} />
-              <Route path="edit/:id" element={<CategoryEdit />} />
-              <Route path="show/:id" element={<CategoryShow />} />
+              <Route index element={<AntdInferencer />} />
+              <Route path="create" element={<AntdInferencer />} />
+              <Route path="edit/:id" element={<AntdInferencer />} />
+              <Route path="show/:id" element={<AntdInferencer />} />
+            </Route>
+            <Route path="region">
+              <Route index element={<AntdInferencer />} />
+              <Route path="show/:id" element={<AntdInferencer />} />
+              <Route path="edit/:id" element={<AntdInferencer />} />
+              <Route path="create" element={<AntdInferencer />} />
             </Route>
 
             <Route path="*" element={<ErrorComponent />} />

@@ -18,12 +18,15 @@ m = g(r.sub, p.sub) && keyMatch(r.obj, p.obj) && regexMatch(r.act, p.act)
 `);
 
 export const adapter = new StringAdapter(`
+p, ROLE_ADMIN, categories, (list)|(create)
+p, ROLE_ADMIN, categories/*, (edit)|(show)|(delete)
+p, ROLE_ADMIN, categories/*, field
 
-p, admin, categories, (list)|(create)
-p, admin, categories/*, (edit)|(show)|(delete)
-p, admin, categories/*, field
+p, ROLE_ADMIN, region, (list)|(create)
+p, ROLE_ADMIN, region/*, (edit)|(show)|(delete)
+p, ROLE_ADMIN, region/*, field
 
-p, editor, categories, list
-p, editor, categories/actions, field, deny
+p, ROLE_CUSTOMER, categories, list
+p, ROLE_CUSTOMER, categories/actions, field, deny
 
 `);

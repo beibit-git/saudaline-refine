@@ -1,4 +1,4 @@
-import { IResourceComponentsProps } from "@refinedev/core";
+import { IResourceComponentsProps, usePermissions } from "@refinedev/core";
 
 import {
   List,
@@ -15,7 +15,7 @@ import { useCan } from "@refinedev/core";
 
 export const CategoryList: React.FC<IResourceComponentsProps> = () => {
   const { tableProps } = useTable<ICategory>();
-
+  const { data: permissionsData } = usePermissions();
   const { data: canAccess } = useCan({
     resource: "categories",
     action: "field",

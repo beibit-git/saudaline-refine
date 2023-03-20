@@ -1,13 +1,6 @@
 import { useContext } from "react";
 import { useGetIdentity } from "@refinedev/core";
-import {
-  Layout as AntdLayout,
-  Space,
-  Avatar,
-  Typography,
-  Switch,
-  Radio,
-} from "antd";
+import { Layout as AntdLayout, Space, Avatar, Typography, Switch } from "antd";
 import { ColorModeContext } from "../../contexts/color-mode";
 
 const { Text } = Typography;
@@ -18,11 +11,7 @@ type IUser = {
   avatar: string;
 };
 
-interface HeaderProps {
-  role: string;
-}
-
-export const Header: React.FC<HeaderProps> = ({ role }) => {
+export const Header: React.FC = () => {
   const { data: user } = useGetIdentity<IUser>();
   const { mode, setMode } = useContext(ColorModeContext);
 
@@ -31,22 +20,12 @@ export const Header: React.FC<HeaderProps> = ({ role }) => {
       style={{
         display: "flex",
         justifyContent: "flex-end",
-
+        background: "white",
         alignItems: "center",
         padding: "0px 24px",
         height: "64px",
       }}
     >
-      <Radio.Group
-        value={role}
-        onChange={(event) => {
-          localStorage.setItem("role", event.target.value);
-          //   location.reload();
-        }}
-      >
-        <Radio.Button value="admin">Admin</Radio.Button>
-        <Radio.Button value="editor">Editor</Radio.Button>
-      </Radio.Group>
       <Space>
         <Switch
           checkedChildren="🌛"
@@ -56,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({ role }) => {
         />
         <Space style={{ marginLeft: "8px" }}>
           {user?.name && (
-            <Text style={{ color: "white" }} strong>
+            <Text style={{ color: "black" }} strong>
               {user.name}
             </Text>
           )}
