@@ -26,6 +26,18 @@ p, ROLE_ADMIN, region, (list)|(create)
 p, ROLE_ADMIN, region/*, (edit)|(show)|(delete)
 p, ROLE_ADMIN, region/*, field
 
+p, ROLE_PROVIDER, categories, (list)|(create)
+p, ROLE_PROVIDER, categories/*, (edit)|(show)|(delete)
+p, ROLE_PROVIDER, categories/*, field
+
+p, ROLE_PROVIDER, subcategory, (list)|(create)
+p, ROLE_PROVIDER, subcategory/*, (edit)|(show)|(delete)
+p, ROLE_PROVIDER, subcategory/*, field
+
+p, ROLE_PROVIDER, region, (list)|(create)
+p, ROLE_PROVIDER, region/*, (edit)|(show)|(delete)
+p, ROLE_PROVIDER, region/*, field
+
 p, ROLE_CUSTOMER, categories, list
 p, ROLE_CUSTOMER, categories/actions, field, deny
 

@@ -1,6 +1,6 @@
-import { CanAccess, Refine } from "@refinedev/core";
+import { CanAccess, Refine, HttpError } from "@refinedev/core";
+import axios, { InternalAxiosRequestConfig } from "axios";
 import { notificationProvider, Layout, ErrorComponent } from "@refinedev/antd";
-import dataProvider from "@refinedev/simple-rest";
 import routerProvider, {
   NavigateToResource,
   UnsavedChangesNotifier,
@@ -8,20 +8,47 @@ import routerProvider, {
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { AntdInferencer } from "@refinedev/inferencer/antd";
 import "@refinedev/antd/dist/reset.css";
-
+import dataProvider from "@refinedev/simple-rest";
 import { Header, Title } from "components";
+// import { axiosInstance } from "./providers/axios";
 import {
-  CategoryList,
-  CategoryCreate,
-  CategoryEdit,
-  CategoryShow,
+  CategoriesList,
+  CategoriesCreate,
+  CategoriesEdit,
+  CategoriesShow,
 } from "pages/categories";
+import {
+  SubcategoryList,
+  SubcategoryCreate,
+  SubcategoryEdit,
+  SubcategoryShow,
+} from "pages/subcategories";
 import authProvider from "providers/authProvider";
 import accessControlProvider from "providers/accessControlProvider";
 import Constants from "common/constants";
-
+const axiosInstance = axios.create();
 const API_URL = Constants.API_BASE_URL!;
+
 const App: React.FC = () => {
+  //   axiosInstance.interceptors.request.use((request: any) => {
+  //     request.headers.set('Authorization', `Bearer ${localStorage.getItem("token")}`);
+  //     return request;
+  // }
+  // );
+
+  // axiosInstance.defaults.headers.common = {
+  //   Authorization: `Bearer ${localStorage.getItem("token")}`,
+  // };
+  axiosInstance.interceptors.request.use(
+    (request: InternalAxiosRequestConfig) => {
+      request.headers.set({
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      });
+
+      return request;
+    }
+  );
+
   return (
     <BrowserRouter basename="/admin">
       <Refine
@@ -72,11 +99,17 @@ const App: React.FC = () => {
             <Route index element={<NavigateToResource resource="posts" />} />
 
             <Route path="/categories">
-              <Route index element={<AntdInferencer />} />
-              <Route path="create" element={<AntdInferencer />} />
-              <Route path="edit/:id" element={<AntdInferencer />} />
-              <Route path="show/:id" element={<AntdInferencer />} />
+              <Route index element={<CategoriesList />} />
+              <Route path="create" element={<CategoriesCreate />} />
+              <Route path="edit/:id" element={<CategoriesEdit />} />
+              <Route path="show/:id" element={<CategoriesShow />} />
             </Route>
+            {/* <Route path="/subcategory">
+              <Route index element={<SubcategoryList />} />
+              <Route path="create" element={<SubcategoryCreate />} />
+              <Route path="edit/:id" element={<SubcategoryEdit />} />
+              <Route path="show/:id" element={<SubcategoryShow />} />
+            </Route> */}
             <Route path="region">
               <Route index element={<AntdInferencer />} />
               <Route path="show/:id" element={<AntdInferencer />} />

@@ -3,17 +3,18 @@ import type { AuthBindings } from "@refinedev/core";
 import Constants from "common/constants";
 import { AESEncrypt, AESDecrypt } from "../common/Crypto-Helper";
 
-const axiosInstance = axios.create();
+interface IUser {
+  name: number;
+  surname: string;
+}
+
+export const axiosInstance = axios.create();
 
 const authProvider: AuthBindings = {
   login: async (data: { email: any; password: any; login?: any }) => {
     data["login"] = data.email;
 
     const response = await axios.post(`${Constants.API_BASE_URL}`, data);
-
-    axiosInstance.defaults.headers.common = {
-      Authorization: `Bearer 123`,
-    };
 
     if (response.data.isActive) {
       const encryptedRole = AESEncrypt(response.data.role.roleName);
@@ -34,6 +35,14 @@ const authProvider: AuthBindings = {
   check: async () => {
     const user = localStorage.getItem("user");
     const token = localStorage.getItem("token");
+    // axiosInstance({
+    //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    // });
+    // axiosInstance.defaults.headers config.headers.setAuthorization(`Bearer ${token.bearerToken}`);
+
+    // axiosInstance.defaults.headers.common = {
+    //   Authorization: `Bearer ${localStorage.getItem("token")}`,
+    // };
 
     if (user && token) {
       return {
@@ -79,14 +88,14 @@ const authProvider: AuthBindings = {
     return roleName;
   },
   getIdentity: async () => {
-    // const token = localStorage.getItem(TOKEN_KEY);
-    // if (!token) {
-    //     return null;
-    // }
-
+    const itemString = localStorage.getItem("user");
+    if (!itemString) {
+      return null;
+    }
+    const user = JSON.parse(itemString);
     return {
-      id: 1,
-      name: "James Sullivan",
+      id: user.id,
+      name: `${user.name + " " + user.surname}`,
       avatar: "https://i.pravatar.cc/150",
     };
   },

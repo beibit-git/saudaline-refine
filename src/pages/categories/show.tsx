@@ -1,25 +1,26 @@
-import { useShow, IResourceComponentsProps } from "@refinedev/core";
-
-import { Show } from "@refinedev/antd";
-
+import React from "react";
+import { IResourceComponentsProps, useShow } from "@refinedev/core";
+import { Show, NumberField, TagField, TextField } from "@refinedev/antd";
 import { Typography } from "antd";
 
-import { ICategory } from "interfaces";
+const { Title } = Typography;
 
-const { Title, Text } = Typography;
-
-export const CategoryShow: React.FC<IResourceComponentsProps> = () => {
-  const { queryResult } = useShow<ICategory>();
+export const CategoriesShow: React.FC<IResourceComponentsProps> = () => {
+  const { queryResult } = useShow();
   const { data, isLoading } = queryResult;
+
   const record = data?.data;
 
   return (
     <Show isLoading={isLoading}>
       <Title level={5}>Id</Title>
-      <Text>{record?.id}</Text>
-
+      <NumberField value={record?.id ?? ""} />
+      <Title level={5}>Provider</Title>
+      <TextField value={record?.provider?.name} />
       <Title level={5}>Title</Title>
-      <Text>{record?.title}</Text>
+      <TextField value={record?.title} />
+      <Title level={5}>Description</Title>
+      <TextField value={record?.description} />
     </Show>
   );
 };
