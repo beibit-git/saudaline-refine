@@ -9,8 +9,15 @@ export const CategoriesCreate: React.FC<IResourceComponentsProps> = () => {
   const { data: user } = useGetIdentity<IUser>();
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
+      <Form
+        {...formProps}
+        layout="vertical"
+        initialValues={{
+          isActive: true,
+        }}
+      >
         <Form.Item
+          hidden
           label="Поставщик"
           name={["provider"]}
           initialValue={user?.id}
@@ -42,22 +49,19 @@ export const CategoriesCreate: React.FC<IResourceComponentsProps> = () => {
             },
           ]}
         >
-          <Input />
+          <Input.TextArea rows={6} />
         </Form.Item>
         <Form.Item
           label="Статус"
-          name={["isActive"]}
           valuePropName="checked"
+          name={["isActive"]}
           rules={[
             {
               required: true,
             },
           ]}
         >
-          <Radio.Group>
-            <Radio value={true}>активный</Radio>
-            <Radio value={false}>не активный</Radio>
-          </Radio.Group>
+          <Checkbox>активный</Checkbox>
         </Form.Item>
       </Form>
     </Create>

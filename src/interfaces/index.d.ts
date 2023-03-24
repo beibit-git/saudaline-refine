@@ -58,6 +58,14 @@ export interface IBusinessType {
 export interface ICity {
   id: number;
   name: string;
+  region: IRegion;
+}
+
+export interface IRegion {
+  id: number;
+  nameKz: string;
+  nameRu: string;
+  nameEn: string;
 }
 
 export interface IProviderCategory {

@@ -17,12 +17,7 @@ import {
   CategoriesEdit,
   CategoriesShow,
 } from "pages/categories";
-import {
-  SubcategoryList,
-  SubcategoryCreate,
-  SubcategoryEdit,
-  SubcategoryShow,
-} from "pages/subcategories";
+import { RegionList } from "pages/regions";
 import authProvider from "providers/authProvider";
 import accessControlProvider from "providers/accessControlProvider";
 import Constants from "common/constants";
@@ -97,26 +92,18 @@ const App: React.FC = () => {
             }
           >
             <Route index element={<NavigateToResource resource="posts" />} />
-
             <Route path="/categories">
               <Route index element={<CategoriesList />} />
               <Route path="create" element={<CategoriesCreate />} />
               <Route path="edit/:id" element={<CategoriesEdit />} />
               <Route path="show/:id" element={<CategoriesShow />} />
             </Route>
-            {/* <Route path="/subcategory">
-              <Route index element={<SubcategoryList />} />
-              <Route path="create" element={<SubcategoryCreate />} />
-              <Route path="edit/:id" element={<SubcategoryEdit />} />
-              <Route path="show/:id" element={<SubcategoryShow />} />
-            </Route> */}
             <Route path="region">
-              <Route index element={<AntdInferencer />} />
+              <Route index element={<RegionList />} />
               <Route path="show/:id" element={<AntdInferencer />} />
               <Route path="edit/:id" element={<AntdInferencer />} />
               <Route path="create" element={<AntdInferencer />} />
             </Route>
-
             <Route path="*" element={<ErrorComponent />} />
           </Route>
         </Routes>

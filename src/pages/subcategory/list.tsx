@@ -22,7 +22,7 @@ export const SubcategoryList: React.FC<IResourceComponentsProps> = () => {
     <List>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title="Id" />
-        <Table.Column dataIndex={["category", "id"]} title="Category3333" />
+        <Table.Column dataIndex={["category", "title"]} title="Категория" />
         <Table.Column dataIndex="title" title="Title" />
         <Table.Column dataIndex="description" title="Description" />
         <Table.Column dataIndex="photo" title="Photo" />

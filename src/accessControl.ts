@@ -38,6 +38,10 @@ p, ROLE_PROVIDER, region, (list)|(create)
 p, ROLE_PROVIDER, region/*, (edit)|(show)|(delete)
 p, ROLE_PROVIDER, region/*, field
 
+p, ROLE_PROVIDER, city, (list)|(create)
+p, ROLE_PROVIDER, city/*, (edit)|(show)|(delete)
+p, ROLE_PROVIDER, city/*, field
+
 p, ROLE_CUSTOMER, categories, list
 p, ROLE_CUSTOMER, categories/actions, field, deny
 

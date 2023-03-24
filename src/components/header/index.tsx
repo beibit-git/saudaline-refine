@@ -14,6 +14,9 @@ type IUser = {
 export const Header: React.FC = () => {
   const { data: user } = useGetIdentity<IUser>();
   const { mode, setMode } = useContext(ColorModeContext);
+  function handleChangeMode() {
+    setMode(mode === "light" ? "dark" : "light");
+  }
 
   return (
     <AntdLayout.Header
@@ -30,7 +33,7 @@ export const Header: React.FC = () => {
         <Switch
           checkedChildren="🌛"
           unCheckedChildren="🔆"
-          onChange={() => setMode(mode === "light" ? "dark" : "light")}
+          onChange={handleChangeMode}
           defaultChecked={mode === "dark"}
         />
         <Space style={{ marginLeft: "8px" }}>

@@ -1,11 +1,5 @@
-import React from "react";
-import {
-  IResourceComponentsProps,
-  BaseRecord,
-  BaseKey,
-  useGetIdentity,
-  useDelete,
-} from "@refinedev/core";
+import { IResourceComponentsProps, BaseRecord, BaseKey } from "@refinedev/core";
+import { AntdInferencer } from "@refinedev/inferencer/antd";
 import {
   List,
   EditButton,
@@ -17,11 +11,10 @@ import {
   DeleteButton,
 } from "@refinedev/antd";
 import { Table, Space, Form, Button, Input, Checkbox, Grid } from "antd";
-import { SubcategoryCreate } from "pages/subcategory";
-import { ICategories, ISubcategory, IUser } from "interfaces";
+import { CityCreate } from "components/city/create";
+import { IUser, IRegion, ICity } from "interfaces";
 
-export const CategoriesList: React.FC<IResourceComponentsProps> = () => {
-  const { data: user } = useGetIdentity<IUser>();
+export const RegionList: React.FC<IResourceComponentsProps> = () => {
   const {
     tableProps,
     formProps,
@@ -29,22 +22,13 @@ export const CategoriesList: React.FC<IResourceComponentsProps> = () => {
     saveButtonProps,
     cancelButtonProps,
     setId: setEditId,
-  } = useEditableTable<ICategories>({
+  } = useEditableTable<IRegion>({
     initialSorter: [
       {
-        field: "title",
+        field: "nameRu",
         order: "desc",
       },
     ],
-    filters: {
-      initial: [
-        {
-          field: "userId",
-          operator: "eq",
-          value: user?.id,
-        },
-      ],
-    },
   });
 
   const breakpoint = Grid.useBreakpoint();
@@ -68,13 +52,13 @@ export const CategoriesList: React.FC<IResourceComponentsProps> = () => {
           })}
         >
           <Table.Column
-            key="title"
-            dataIndex="title"
-            title="Заголовок"
-            render={(value, data: ICategories) => {
+            key="nameRu"
+            dataIndex="nameRu"
+            title="Названия на русском"
+            render={(value, data: IRegion) => {
               if (isEditing(data.id)) {
                 return (
-                  <Form.Item name="title" style={{ margin: 0 }}>
+                  <Form.Item name="nameRu" style={{ margin: 0 }}>
                     <Input />
                   </Form.Item>
                 );
@@ -83,33 +67,28 @@ export const CategoriesList: React.FC<IResourceComponentsProps> = () => {
             }}
           />
           <Table.Column
-            key="isActive"
-            dataIndex="isActive"
-            title="Статус"
-            render={(value, data: ICategories) => {
+            key="nameKz"
+            dataIndex="nameKz"
+            title="Названия на казахском"
+            render={(value, data: IRegion) => {
               if (isEditing(data.id)) {
                 return (
-                  <Form.Item
-                    name="isActive"
-                    style={{ margin: 0 }}
-                    valuePropName="checked"
-                  >
-                    <Checkbox />
+                  <Form.Item name="nameKz" style={{ margin: 0 }}>
+                    <Input />
                   </Form.Item>
                 );
               }
-              // console.log(value);
-              return <BooleanField value={value} />;
+              return value;
             }}
           />
           <Table.Column
-            key="description"
-            dataIndex="description"
-            title="Описание"
-            render={(value, data: ICategories) => {
+            key="nameEn"
+            dataIndex="nameEn"
+            title="Названия на английском"
+            render={(value, data: IRegion) => {
               if (isEditing(data.id)) {
                 return (
-                  <Form.Item name="description" style={{ margin: 0 }}>
+                  <Form.Item name="nameEn" style={{ margin: 0 }}>
                     <Input />
                   </Form.Item>
                 );
@@ -159,10 +138,7 @@ export const CategoriesList: React.FC<IResourceComponentsProps> = () => {
   );
 };
 
-const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
-  record,
-}) => {
-  const { mutate: mutateDelete } = useDelete();
+const RegionCityTable: React.FC<{ record: IRegion }> = ({ record }) => {
   const {
     tableProps,
     formProps,
@@ -171,11 +147,11 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
     cancelButtonProps,
     sorters,
     setId: setEditId,
-  } = useEditableTable<ISubcategory>({
-    resource: "subcategory",
+  } = useEditableTable<ICity>({
+    resource: "city",
     permanentFilter: [
       {
-        field: "catId",
+        field: "regionId",
         operator: "eq",
         value: record.id,
       },
@@ -188,9 +164,9 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
     formProps: createFormProps,
     saveButtonProps: createSaveButtonProps,
     show: createShow,
-  } = useDrawerForm<ISubcategory>({
+  } = useDrawerForm<ICity>({
     action: "create",
-    resource: "subcategory",
+    resource: "city",
     redirect: false,
   });
 
@@ -198,11 +174,9 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
 
   return (
     <List
-      title="Подкатегории"
+      title="Города"
       headerButtons={
-        <CreateButton onClick={() => createShow()}>
-          Создать подкатегорию
-        </CreateButton>
+        <CreateButton onClick={() => createShow()}>Добавить город</CreateButton>
       }
     >
       <Form {...formProps}>
@@ -219,13 +193,28 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
           })}
         >
           <Table.Column
-            key="title"
-            dataIndex="title"
-            title="Заголовок"
-            render={(value, data: ICategories) => {
+            key="name"
+            dataIndex="name"
+            title="Назания на казахском"
+            render={(value, data: IRegion) => {
               if (isEditing(data.id)) {
                 return (
-                  <Form.Item name="title" style={{ margin: 0 }}>
+                  <Form.Item name="name" style={{ margin: 0 }}>
+                    <Input />
+                  </Form.Item>
+                );
+              }
+              return value;
+            }}
+          />
+          {/* <Table.Column
+            key="nameKz"
+            dataIndex="nameKz"
+            title="Назания на казахском"
+            render={(value, data: IRegion) => {
+              if (isEditing(data.id)) {
+                return (
+                  <Form.Item name="nameKz" style={{ margin: 0 }}>
                     <Input />
                   </Form.Item>
                 );
@@ -234,33 +223,13 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
             }}
           />
           <Table.Column
-            key="isActive"
-            dataIndex="isActive"
-            title="Статус"
-            // render={(value) => <BooleanField value={value} />}
-            render={(value, data: ISubcategory) => {
+            key="nameRu"
+            dataIndex="nameRu"
+            title="Назания на русском"
+            render={(value, data: IRegion) => {
               if (isEditing(data.id)) {
                 return (
-                  <Form.Item
-                    name="isActive"
-                    style={{ margin: 0 }}
-                    valuePropName="checked"
-                  >
-                    <Checkbox />
-                  </Form.Item>
-                );
-              }
-              return <BooleanField value={value} />;
-            }}
-          />
-          <Table.Column
-            key="description"
-            dataIndex="description"
-            title="Описание"
-            render={(value, data: ICategories) => {
-              if (isEditing(data.id)) {
-                return (
-                  <Form.Item name="description" style={{ margin: 0 }}>
+                  <Form.Item name="nameRu" style={{ margin: 0 }}>
                     <Input />
                   </Form.Item>
                 );
@@ -268,6 +237,21 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
               return value;
             }}
           />
+          <Table.Column
+            key="nameEn"
+            dataIndex="nameEn"
+            title="Назания на английском"
+            render={(value, data: IRegion) => {
+              if (isEditing(data.id)) {
+                return (
+                  <Form.Item name="nameEn" style={{ margin: 0 }}>
+                    <Input />
+                  </Form.Item>
+                );
+              }
+              return value;
+            }}
+          /> */}
           <Table.Column
             title="Действия"
             key="actions"
@@ -299,7 +283,7 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
                     hideText
                     size="small"
                     recordItemId={(record as BaseRecord).id as BaseKey}
-                    resource="subcategory"
+                    resource="city"
                   />
                 </Space>
               );
@@ -307,7 +291,7 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
           />
         </Table>
       </Form>
-      <SubcategoryCreate
+      <CityCreate
         drawerProps={createDrawerProps}
         formProps={createFormProps}
         saveButtonProps={createSaveButtonProps}
@@ -316,6 +300,6 @@ const CategorySubcategoryTable: React.FC<{ record: ICategories }> = ({
   );
 };
 
-const expandedRowRender = (record: ICategories) => {
-  return <CategorySubcategoryTable record={record} />;
+const expandedRowRender = (record: IRegion) => {
+  return <RegionCityTable record={record} />;
 };
