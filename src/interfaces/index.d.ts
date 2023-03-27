@@ -17,6 +17,34 @@ export interface IPost {
   category: { id: number };
 }
 
+export interface IFile {
+  name: string;
+  percent: number;
+  size: number;
+  status: "error" | "success" | "done" | "uploading" | "removed";
+  type: string;
+  uid: string;
+  url: string;
+}
+
+export interface IProduct {
+  id: number;
+  title: string;
+  description: string;
+  brand: IBrands;
+  mainPhoto: IFile;
+  photos: string;
+  unitType: IUnitType;
+  hits: number;
+  amount: number;
+  price: number;
+  category: ICategories;
+  subCategory: ISubcategory;
+  provider: IProvider;
+  // status: "published" | "draft" | "rejected";
+  // category: { id: number };
+}
+
 export interface IUserAvatar {
   name: string;
   url: string;
@@ -55,6 +83,11 @@ export interface IBusinessType {
   name: string;
 }
 
+export interface IUnitType {
+  id: number;
+  name: string;
+}
+
 export interface ICity {
   id: number;
   name: string;
@@ -66,6 +99,11 @@ export interface IRegion {
   nameKz: string;
   nameRu: string;
   nameEn: string;
+}
+
+export interface IBrands {
+  id: number;
+  name: string;
 }
 
 export interface IProviderCategory {

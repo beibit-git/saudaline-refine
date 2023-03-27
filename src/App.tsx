@@ -17,6 +17,12 @@ import {
   CategoriesEdit,
   CategoriesShow,
 } from "pages/categories";
+import {
+  ProductList,
+  ProductCreate,
+  ProductEdit,
+  ProductShow,
+} from "pages/products";
 import { RegionList } from "pages/regions";
 import authProvider from "providers/authProvider";
 import accessControlProvider from "providers/accessControlProvider";
@@ -74,6 +80,28 @@ const App: React.FC = () => {
               canDelete: true,
             },
           },
+          {
+            name: "product",
+            list: "/product",
+            show: "/product/show/:id",
+            create: "/product/create",
+            edit: "/product/edit/:id",
+            meta: {
+              label: "Товары",
+              canDelete: true,
+            },
+          },
+          {
+            name: "brands",
+            list: "/brands",
+            show: "/brands/show/:id",
+            create: "/brands/create",
+            edit: "/brands/edit/:id",
+            meta: {
+              label: "Бренды",
+              canDelete: true,
+            },
+          },
         ]}
         notificationProvider={notificationProvider}
         options={{
@@ -103,6 +131,18 @@ const App: React.FC = () => {
               <Route path="show/:id" element={<AntdInferencer />} />
               <Route path="edit/:id" element={<AntdInferencer />} />
               <Route path="create" element={<AntdInferencer />} />
+            </Route>
+            <Route path="brands">
+              <Route index element={<AntdInferencer />} />
+              <Route path="show/:id" element={<AntdInferencer />} />
+              <Route path="edit/:id" element={<AntdInferencer />} />
+              <Route path="create" element={<AntdInferencer />} />
+            </Route>
+            <Route path="product">
+              <Route index element={<ProductList />} />
+              <Route path="show/:id" element={<ProductShow />} />
+              <Route path="edit/:id" element={<ProductEdit />} />
+              <Route path="create" element={<ProductCreate />} />
             </Route>
             <Route path="*" element={<ErrorComponent />} />
           </Route>

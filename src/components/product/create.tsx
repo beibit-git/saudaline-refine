@@ -1,7 +1,7 @@
-import { useTranslate, useApiUrl } from "@refinedev/core";
+import { useTranslate, useApiUrl, useGetIdentity } from "@refinedev/core";
 
 import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
-
+import { ICategory, IUser, IBrands, ISubcategory } from "interfaces";
 import {
   Drawer,
   DrawerProps,
@@ -17,12 +17,9 @@ import {
   Typography,
   Upload,
   Grid,
-  Checkbox,
 } from "antd";
 
 const { Text } = Typography;
-
-import { ICategory } from "interfaces";
 
 type CreateProductProps = {
   drawerProps: DrawerProps;
@@ -35,12 +32,20 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
   formProps,
   saveButtonProps,
 }) => {
-  const t = useTranslate();
   const apiUrl = useApiUrl();
   const breakpoint = Grid.useBreakpoint();
+  const { data: user } = useGetIdentity<IUser>();
 
   const { selectProps: categorySelectProps } = useSelect<ICategory>({
     resource: "categories",
+  });
+
+  const { selectProps: brandSelectProps } = useSelect<IBrands>({
+    resource: "brands",
+  });
+
+  const { selectProps: subCategorySelectProps } = useSelect<ISubcategory>({
+    resource: "subcategory",
   });
 
   return (
@@ -69,24 +74,23 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
             isActive: true,
           }}
         >
-          <Form.Item label={t("products.fields.images.label")}>
+          <Form.Item label="Катинка товара">
             <Form.Item
-              name="images"
+              name={["mainPhoto"]}
               valuePropName="fileList"
               getValueFromEvent={getValueFromEvent}
               noStyle
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+              //   rules={[
+              //     {
+              //       required: true,
+              //     },
+              //   ]}
             >
               <Upload.Dragger
                 name="file"
-                action={`${apiUrl}/media/upload`}
+                action={`${apiUrl}/file/upload-main-photo`}
                 listType="picture"
                 maxCount={1}
-                accept=".png"
               >
                 <Space direction="vertical" size={2}>
                   <Avatar
@@ -105,18 +109,18 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                       marginTop: "8px",
                     }}
                   >
-                    {t("products.fields.images.description")}
+                    Загрузить картинку товара
                   </Text>
                   <Text style={{ fontSize: "12px" }}>
-                    {t("products.fields.images.validation")}
+                    {/* {t("products.fields.images.validation")} */}
                   </Text>
                 </Space>
               </Upload.Dragger>
             </Form.Item>
           </Form.Item>
           <Form.Item
-            label={t("products.fields.name")}
-            name="name"
+            label="Названия товара"
+            name={["title"]}
             rules={[
               {
                 required: true,
@@ -126,8 +130,8 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
             <Input />
           </Form.Item>
           <Form.Item
-            label={t("products.fields.description")}
-            name="description"
+            label="Описание товара"
+            name={["description"]}
             rules={[
               {
                 required: true,
@@ -137,23 +141,63 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
             <Input.TextArea rows={6} />
           </Form.Item>
           <Form.Item
-            label={t("products.fields.price")}
-            name="price"
+            label="Unit Type"
+            name={["unitType"]}
+            // rules={[
+            //   {
+            //     required: true,
+            //   },
+            // ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Количество товара"
+            name={["amount"]}
             rules={[
               {
                 required: true,
-                type: "number",
               },
             ]}
           >
-            <InputNumber
-              formatter={(value) => `$ ${value}`}
-              style={{ width: "150px" }}
-            />
+            <Input type="number" />
           </Form.Item>
           <Form.Item
-            label={t("products.fields.category")}
-            name={["category", "id"]}
+            label="Цена"
+            name={["price"]}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="Brand"
+            name={["brand"]}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select {...brandSelectProps} />
+          </Form.Item>
+          <Form.Item
+            label="Photos"
+            name={["photos"]}
+            // rules={[
+            //   {
+            //     required: true,
+            //   },
+            // ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Category"
+            name={["category"]}
             rules={[
               {
                 required: true,
@@ -163,17 +207,35 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
             <Select {...categorySelectProps} />
           </Form.Item>
           <Form.Item
-            label={t("products.fields.isActive")}
-            valuePropName="checked"
-            name={["isActive"]}
+            hidden
+            label="Поставщик"
+            name={["provider"]}
+            initialValue={user?.id}
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Checkbox>{t("products.fields.isActive")}</Checkbox>
+            <Input value={user?.id} disabled />
           </Form.Item>
+          <Form.Item
+            label="Sub Category"
+            name={["subCategory"]}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select {...subCategorySelectProps} />
+          </Form.Item>
+          {/* <Form.Item label={t("products.fields.isActive")} name="isActive">
+            <Radio.Group>
+              <Radio value={true}>{t("status.enable")}</Radio>
+              <Radio value={false}>{t("status.disable")}</Radio>
+            </Radio.Group>
+          </Form.Item> */}
         </Form>
       </Create>
     </Drawer>
