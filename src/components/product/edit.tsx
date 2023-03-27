@@ -1,6 +1,11 @@
-import { useTranslate, useApiUrl, useGetIdentity } from "@refinedev/core";
+import {
+  useTranslate,
+  useApiUrl,
+  useGetIdentity,
+  BaseKey,
+} from "@refinedev/core";
 
-import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
+import { Edit, getValueFromEvent, useSelect } from "@refinedev/antd";
 import { ICategory, IUser, IBrands, ISubcategory } from "interfaces";
 import {
   Drawer,
@@ -22,21 +27,22 @@ import { useState } from "react";
 
 const { Text } = Typography;
 
-type CreateProductProps = {
+type EditProductProps = {
   drawerProps: DrawerProps;
   formProps: FormProps;
   saveButtonProps: ButtonProps;
+  editId?: BaseKey;
 };
 
-export const CreateProduct: React.FC<CreateProductProps> = ({
+export const EditProduct: React.FC<EditProductProps> = ({
   drawerProps,
   formProps,
   saveButtonProps,
+  editId,
 }) => {
   const apiUrl = useApiUrl();
   const breakpoint = Grid.useBreakpoint();
   const { data: user } = useGetIdentity<IUser>();
-  const [selectCategory, setSelectCategory] = useState(null);
 
   const { selectProps: categorySelectProps } = useSelect<ICategory>({
     resource: "categories",
@@ -45,22 +51,12 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
   const { selectProps: brandSelectProps } = useSelect<IBrands>({
     resource: "brands",
     optionLabel: "name",
+    optionValue: "id",
   });
 
   const { selectProps: subCategorySelectProps } = useSelect<ISubcategory>({
     resource: "subcategory",
-    filters: [
-      {
-        field: "catId",
-        operator: "eq",
-        value: selectCategory,
-      },
-    ],
   });
-
-  const handleSelectCategory = (e: any) => {
-    setSelectCategory(e);
-  };
 
   return (
     <Drawer
@@ -68,10 +64,10 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
       width={breakpoint.sm ? "500px" : "100%"}
       zIndex={1001}
     >
-      <Create
+      <Edit
         resource="product"
         saveButtonProps={saveButtonProps}
-        goBack={false}
+        recordItemId={editId}
         contentProps={{
           style: {
             boxShadow: "none",
@@ -81,13 +77,7 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
           },
         }}
       >
-        <Form
-          {...formProps}
-          layout="vertical"
-          initialValues={{
-            isActive: true,
-          }}
-        >
+        <Form {...formProps} layout="vertical">
           <Form.Item label="Изображение товара">
             <Form.Item
               name={["mainPhoto"]}
@@ -234,36 +224,33 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
               },
             ]}
           >
-            <Select {...categorySelectProps} onChange={handleSelectCategory} />
+            <Select {...categorySelectProps} />
           </Form.Item>
           <Form.Item
             hidden
             label="Поставщик"
             name={["provider", "id"]}
-            initialValue={user?.id}
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Input value={user?.id} disabled />
+            <Input disabled />
           </Form.Item>
-          {selectCategory ? (
-            <Form.Item
-              label="Подкатегория"
-              name={["subCategory", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Select {...subCategorySelectProps} />
-            </Form.Item>
-          ) : null}
+          <Form.Item
+            label="Подкатегория"
+            name={["subCategory", "id"]}
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select {...subCategorySelectProps} />
+          </Form.Item>
         </Form>
-      </Create>
+      </Edit>
     </Drawer>
   );
 };

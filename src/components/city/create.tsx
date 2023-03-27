@@ -28,6 +28,8 @@ export const CityCreate: React.FC<CreateCityProps> = ({
 
   const { selectProps: regionSelectProps } = useSelect<IRegion>({
     resource: "region",
+    optionLabel: "nameRu",
+    optionValue: "id",
   });
 
   return (

@@ -32,8 +32,8 @@ export interface IProduct {
   title: string;
   description: string;
   brand: IBrands;
-  mainPhoto: IFile;
-  photos: string;
+  mainPhoto: IFile[];
+  photos: IFile[];
   unitType: IUnitType;
   hits: number;
   amount: number;
@@ -43,6 +43,14 @@ export interface IProduct {
   provider: IProvider;
   // status: "published" | "draft" | "rejected";
   // category: { id: number };
+}
+
+export interface IProductFilterVariables {
+  q?: string;
+  provider?: string;
+  // user?: string;
+  createdAt?: [Dayjs, Dayjs];
+  // status?: string;
 }
 
 export interface IUserAvatar {

@@ -6,19 +6,43 @@ import {
   getDefaultFilter,
 } from "@refinedev/core";
 
-import { useSimpleList, CreateButton, useDrawerForm } from "@refinedev/antd";
-import { CreateProduct, ProductItem } from "components/product";
+import {
+  useSimpleList,
+  useTable,
+  CreateButton,
+  useDrawerForm,
+  useSelect,
+} from "@refinedev/antd";
+import { CreateProduct, ProductItem, EditProduct } from "components/product";
 
-import { IProduct } from "interfaces";
+import { IProduct, IProvider, IProductFilterVariables } from "interfaces";
 import { SearchOutlined } from "@ant-design/icons";
-import { Row, List as AntdList, Col, Form, Input, Typography } from "antd";
+import {
+  Row,
+  List as AntdList,
+  Col,
+  Form,
+  Input,
+  Typography,
+  Select,
+  Button,
+  FormProps,
+  DatePicker,
+  Card,
+} from "antd";
+import dayjs from "dayjs";
+import { useMemo } from "react";
 
 const { Text } = Typography;
 
 export const ProductList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
 
-  const { listProps, searchFormProps, filters } = useSimpleList<
+  const {
+    listProps,
+    searchFormProps: searchFormPropsList,
+    filters: filtersList,
+  } = useSimpleList<
     IProduct,
     HttpError,
     { name: string; categories: string[] }
@@ -43,6 +67,61 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     },
   });
 
+  const { tableProps, sorter, searchFormProps, filters } = useTable<
+    IProduct,
+    HttpError,
+    IProductFilterVariables
+  >({
+    onSearch: (params) => {
+      const filters: CrudFilters = [];
+      // const { q, store, user, createdAt, status } = params;
+      const { q, provider, createdAt } = params;
+
+      filters.push({
+        field: "q",
+        operator: "eq",
+        value: q,
+      });
+
+      filters.push({
+        field: "provider.id",
+        operator: "eq",
+        value: provider,
+      });
+
+      // filters.push({
+      //     field: "user.id",
+      //     operator: "eq",
+      //     value: user,
+      // });
+
+      // filters.push({
+      //     field: "status.text",
+      //     operator: "in",
+      //     value: status,
+      // });
+
+      filters.push(
+        {
+          field: "createsDate",
+          operator: "gte",
+          value: createdAt
+            ? createdAt[0].startOf("day").toISOString()
+            : undefined,
+        },
+        {
+          field: "createsDate",
+          operator: "lte",
+          value: createdAt
+            ? createdAt[1].endOf("day").toISOString()
+            : undefined,
+        }
+      );
+
+      return filters;
+    },
+  });
+
   const {
     drawerProps: createDrawerProps,
     formProps: createFormProps,
@@ -62,24 +141,39 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     id: editId,
   } = useDrawerForm<IProduct>({
     action: "edit",
-    resource: "products",
+    resource: "product",
     redirect: false,
   });
 
   return (
     <div>
-      <Form
-        {...searchFormProps}
-        onValuesChange={() => {
-          searchFormProps.form?.submit();
-        }}
-        initialValues={{
-          name: getDefaultFilter("name", filters, "contains"),
-          categories: getDefaultFilter("category.id", filters, "in"),
-        }}
-      >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={18}>
+      <Row gutter={[16, 16]}>
+        <Col
+          xl={6}
+          lg={24}
+          xs={24}
+          style={{
+            marginTop: "52px",
+          }}
+        >
+          <Card title="Фильтр">
+            <Filter formProps={searchFormProps} filters={filters || []} />
+          </Card>
+          {/* <Form.Item name="categories">
+              <ProductCategoryFilter />
+            </Form.Item> */}
+        </Col>
+        <Col xl={18} xs={24}>
+          <Form
+            {...searchFormProps}
+            onValuesChange={() => {
+              searchFormProps.form?.submit();
+            }}
+            initialValues={{
+              name: getDefaultFilter("name", filters, "contains"),
+              categories: getDefaultFilter("category.id", filters, "in"),
+            }}
+          >
             <div
               style={{
                 display: "flex",
@@ -115,11 +209,11 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
                 md: 2,
                 lg: 3,
                 xl: 4,
-                xxl: 4,
+                xxl: 5,
               }}
               style={{
                 height: "100%",
-                overflow: "auto",
+                // overflow: "auto",
                 paddingRight: "4px",
               }}
               {...listProps}
@@ -127,37 +221,118 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
                 <ProductItem item={item} editShow={editShow} />
               )}
             />
-          </Col>
-          <Col xs={0} sm={6}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                height: "40px",
-                marginBottom: "16px",
-              }}
-            >
-              <Text style={{ fontWeight: 500 }}>
-                Используйте теги для фильтрации поиска
-              </Text>
-            </div>
-            {/* <Form.Item name="categories">
-              <ProductCategoryFilter />
-            </Form.Item> */}
-          </Col>
-        </Row>
-      </Form>
+          </Form>
+        </Col>
+      </Row>
       <CreateProduct
         drawerProps={createDrawerProps}
         formProps={createFormProps}
         saveButtonProps={createSaveButtonProps}
       />
-      {/* <EditProduct
+      <EditProduct
         drawerProps={editDrawerProps}
         formProps={editFormProps}
         saveButtonProps={editSaveButtonProps}
         editId={editId}
-      /> */}
+      />
     </div>
+  );
+};
+
+const Filter: React.FC<{ formProps: FormProps; filters: CrudFilters }> = (
+  props
+) => {
+  const t = useTranslate();
+
+  const { formProps, filters } = props;
+  const { selectProps: storeSelectProps } = useSelect<IProvider>({
+    resource: "stores",
+    defaultValue: getDefaultFilter("store.id", filters),
+  });
+
+  // const { selectProps: orderSelectProps } = useSelect<IOrderStatus>({
+  //   resource: "orderStatuses",
+  //   optionLabel: "text",
+  //   optionValue: "text",
+  //   defaultValue: getDefaultFilter("status.text", filters),
+  // });
+
+  // const { selectProps: userSelectProps } = useSelect<IUser>({
+  //   resource: "users",
+  //   optionLabel: "fullName",
+  //   defaultValue: getDefaultFilter("user.id", filters),
+  // });
+
+  const { RangePicker } = DatePicker;
+
+  const createdAt = useMemo(() => {
+    const start = getDefaultFilter("createdAt", filters, "gte");
+    const end = getDefaultFilter("createdAt", filters, "lte");
+
+    const startFrom = dayjs(start);
+    const endAt = dayjs(end);
+
+    if (start && end) {
+      return [startFrom, endAt];
+    }
+    return undefined;
+  }, [filters]);
+
+  return (
+    <Form
+      layout="vertical"
+      {...formProps}
+      initialValues={{
+        q: getDefaultFilter("q", filters),
+        store: getDefaultFilter("store.id", filters),
+        user: getDefaultFilter("user.id", filters),
+        status: getDefaultFilter("status.text", filters, "in"),
+        createdAt,
+      }}
+    >
+      <Row gutter={[10, 0]} align="bottom">
+        <Col xl={24} md={8} sm={12} xs={24}>
+          <Form.Item label="Фильтр товароа" name="q">
+            <Input placeholder="Поиск" prefix={<SearchOutlined />} />
+          </Form.Item>
+        </Col>
+        {/* <Col xl={24} md={8} sm={12} xs={24}>
+          <Form.Item label={t("orders.filter.status.label")} name="status">
+            <Select
+              {...orderSelectProps}
+              allowClear
+              mode="multiple"
+              placeholder={t("orders.filter.status.placeholder")}
+            />
+          </Form.Item>
+        </Col> */}
+        <Col xl={24} md={8} sm={12} xs={24}>
+          <Form.Item label="Поставщик" name="store">
+            <Select {...storeSelectProps} allowClear placeholder="Поставщик" />
+          </Form.Item>
+        </Col>
+        {/* <Col xl={24} md={8} sm={12} xs={24}>
+          <Form.Item label={t("orders.filter.user.label")} name="user">
+            <Select
+              {...userSelectProps}
+              allowClear
+              placeholder={t("orders.filter.user.placeholder")}
+            />
+          </Form.Item>
+        </Col> */}
+        <Col xl={24} md={8} sm={12} xs={24}>
+          <Form.Item label="По дате создание" name="createdAt">
+            <RangePicker style={{ width: "100%" }} />
+          </Form.Item>
+        </Col>
+        <Col xl={24} md={8} sm={12} xs={24}>
+          <Form.Item>
+            <Button htmlType="submit" type="primary" size="large" block>
+              Применить фильтр
+            </Button>
+          </Form.Item>
+        </Col>
+      </Row>
+    </Form>
   );
 };

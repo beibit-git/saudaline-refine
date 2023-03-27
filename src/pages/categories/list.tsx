@@ -17,7 +17,7 @@ import {
   DeleteButton,
 } from "@refinedev/antd";
 import { Table, Space, Form, Button, Input, Checkbox, Grid } from "antd";
-import { SubcategoryCreate } from "pages/subcategory";
+import { SubcategoryCreate } from "../../components/subcategory/create";
 import { ICategories, ISubcategory, IUser } from "interfaces";
 
 export const CategoriesList: React.FC<IResourceComponentsProps> = () => {

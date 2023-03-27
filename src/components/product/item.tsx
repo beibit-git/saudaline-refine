@@ -97,8 +97,8 @@ export const ProductItem: React.FC<ProductItemProps> = ({
         }}
       >
         <div style={{ textAlign: "center" }}>
-          {item.mainPhoto?.url ? (
-            <Avatar size={128} src={item.mainPhoto?.url} alt={item.title} />
+          {item.mainPhoto[0]?.url ? (
+            <Avatar size={128} src={item.mainPhoto[0]?.url} alt={item.title} />
           ) : (
             <Avatar
               size={128}
