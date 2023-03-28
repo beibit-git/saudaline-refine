@@ -12,6 +12,9 @@ import {
   CreateButton,
   useDrawerForm,
   useSelect,
+  List,
+  TextField,
+  ImageField,
 } from "@refinedev/antd";
 import { CreateProduct, ProductItem, EditProduct } from "components/product";
 
@@ -29,9 +32,11 @@ import {
   FormProps,
   DatePicker,
   Card,
+  Table,
 } from "antd";
 import dayjs from "dayjs";
 import { useMemo } from "react";
+import { image } from "@uiw/react-md-editor";
 
 const { Text } = Typography;
 
@@ -40,38 +45,76 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
 
   const {
     listProps,
-    searchFormProps: searchFormPropsList,
-    filters: filtersList,
+    searchFormProps: searchFormProps,
+    filters: filters,
   } = useSimpleList<
     IProduct,
     HttpError,
-    { name: string; categories: string[] }
-  >({
-    pagination: { pageSize: 12, current: 1 },
-    onSearch: ({ name, categories }) => {
-      const productFilters: CrudFilters = [];
-
-      productFilters.push({
-        field: "category.id",
-        operator: "in",
-        value: categories?.length > 0 ? categories : undefined,
-      });
-
-      productFilters.push({
-        field: "name",
-        operator: "contains",
-        value: name ? name : undefined,
-      });
-
-      return productFilters;
-    },
-  });
-
-  const { tableProps, sorter, searchFormProps, filters } = useTable<
-    IProduct,
-    HttpError,
+    // { name: string; categories: string[] }
     IProductFilterVariables
   >({
+    pagination: { pageSize: 12, current: 1 },
+    onSearch: (params) => {
+      const filters: CrudFilters = [];
+      // const { q, store, user, createdAt, status } = params;
+      const { q, provider, createdAt } = params;
+
+      filters.push({
+        field: "q",
+        operator: "eq",
+        value: q,
+      });
+
+      filters.push({
+        field: "provider.id",
+        operator: "eq",
+        value: provider,
+      });
+
+      filters.push(
+        {
+          field: "createsDate",
+          operator: "gte",
+          value: createdAt
+            ? createdAt[0].startOf("day").toISOString()
+            : undefined,
+        },
+        {
+          field: "createsDate",
+          operator: "lte",
+          value: createdAt
+            ? createdAt[1].endOf("day").toISOString()
+            : undefined,
+        }
+      );
+
+      return filters;
+    },
+    // onSearch: ({ name, categories }) => {
+    //   const productFilters: CrudFilters = [];
+
+    //   productFilters.push({
+    //     field: "category.id",
+    //     operator: "in",
+    //     value: categories?.length > 0 ? categories : undefined,
+    //   });
+
+    //   productFilters.push({
+    //     field: "name",
+    //     operator: "contains",
+    //     value: name ? name : undefined,
+    //   });
+
+    //   return productFilters;
+    // },
+  });
+
+  const {
+    tableProps,
+    sorter,
+    searchFormProps: searchFormPropsTable,
+    filters: filtersTable,
+  } = useTable<IProduct, HttpError, IProductFilterVariables>({
     onSearch: (params) => {
       const filters: CrudFilters = [];
       // const { q, store, user, createdAt, status } = params;
@@ -159,9 +202,6 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
           <Card title="Фильтр">
             <Filter formProps={searchFormProps} filters={filters || []} />
           </Card>
-          {/* <Form.Item name="categories">
-              <ProductCategoryFilter />
-            </Form.Item> */}
         </Col>
         <Col xl={18} xs={24}>
           <Form
@@ -201,7 +241,7 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
                 Добавить товар
               </CreateButton>
             </div>
-            <AntdList
+            {/* <AntdList
               grid={{
                 gutter: 8,
                 xs: 1,
@@ -220,7 +260,129 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
               renderItem={(item) => (
                 <ProductItem item={item} editShow={editShow} />
               )}
-            />
+            /> */}
+            <List
+            // headerProps={{
+            //   extra: <Actions />,
+            // }}
+            >
+              <Table
+                {...tableProps}
+                rowKey="id"
+                onRow={(record) => {
+                  return {
+                    // onClick: () => {
+                    //   show("orders", record.id);
+                    // },
+                  };
+                }}
+              >
+                <Table.Column
+                  key="id"
+                  dataIndex="id"
+                  title="id"
+                  render={(value) => <TextField value={value} />}
+                />
+                {/* <Table.Column<IProduct>
+                  key="status.text"
+                  dataIndex={["status", "text"]}
+                  title={t("orders.fields.status")}
+                  render={(value) => {
+                    return <OrderStatus status={value} />;
+                  }}
+                  defaultSortOrder={getDefaultSortOrder("status.text", sorter)}
+                  sorter
+                /> */}
+                <Table.Column<IProduct>
+                  key="mainPhoto.id"
+                  dataIndex={["mainPhoto", "url"]}
+                  title="Фото"
+                  render={(_, record) => {
+                    console.log(record.mainPhoto[0].url);
+                    return (
+                      <ImageField
+                        value={record.mainPhoto[0].url}
+                        title={record.mainPhoto[0].name}
+                        width={100}
+                      />
+                    );
+                  }}
+                />
+                {/* { title: '', dataIndex: 'flag', key: 'flag', render: flag => ( <img src={'${flag}'} style={{ height: '10%' }} /> ), width: '15%', } */}
+                <Table.Column
+                  key="title"
+                  dataIndex={["title"]}
+                  title="Названия"
+                />
+                <Table.Column
+                  align="right"
+                  key="amount"
+                  dataIndex="amount"
+                  title="Количество"
+                  // defaultSortOrder={getDefaultSortOrder("amount", sorter)}
+                  sorter
+                  // render={(value) => {
+                  //   return (
+                  //     <NumberField
+                  //       options={{
+                  //         currency: "USD",
+                  //         style: "currency",
+                  //       }}
+                  //       value={value / 100}
+                  //     />
+                  //   );
+                  // }}
+                />
+
+                <Table.Column
+                  key="provider.id"
+                  dataIndex={["provider", "name"]}
+                  title="Поставщик"
+                />
+                <Table.Column
+                  key="category.id"
+                  dataIndex={["category", "title"]}
+                  title="Категория"
+                />
+                <Table.Column<IProduct>
+                  key="price"
+                  dataIndex="price"
+                  title="Цена"
+                  // render={(_, record) => (
+                  //   <Popover
+                  //     content={
+                  //       <ul>
+                  //         {record.products.map((product) => (
+                  //           <li key={product.id}>{product.name}</li>
+                  //         ))}
+                  //       </ul>
+                  //     }
+                  //     title="Products"
+                  //     trigger="hover"
+                  //   >
+                  //     {t("orders.fields.itemsAmount", {
+                  //       amount: record.products.length,
+                  //     })}
+                  //   </Popover>
+                  // )}
+                />
+                {/* <Table.Column
+                  key="createdAt"
+                  dataIndex="createdAt"
+                  title={t("orders.fields.createdAt")}
+                  render={(value) => <DateField value={value} format="LLL" />}
+                  sorter
+                /> */}
+                {/* <Table.Column<IOrder>
+                  fixed="right"
+                  title={t("table.actions")}
+                  dataIndex="actions"
+                  key="actions"
+                  align="center"
+                  render={(_value, record) => <OrderActions record={record} />}
+                /> */}
+              </Table>
+            </List>
           </Form>
         </Col>
       </Row>
@@ -245,23 +407,12 @@ const Filter: React.FC<{ formProps: FormProps; filters: CrudFilters }> = (
   const t = useTranslate();
 
   const { formProps, filters } = props;
-  const { selectProps: storeSelectProps } = useSelect<IProvider>({
-    resource: "stores",
-    defaultValue: getDefaultFilter("store.id", filters),
+  const { selectProps: providerSelectProps } = useSelect<IProvider>({
+    resource: "provider",
+    optionLabel: "name",
+    optionValue: "id",
+    defaultValue: getDefaultFilter("provider.id", filters),
   });
-
-  // const { selectProps: orderSelectProps } = useSelect<IOrderStatus>({
-  //   resource: "orderStatuses",
-  //   optionLabel: "text",
-  //   optionValue: "text",
-  //   defaultValue: getDefaultFilter("status.text", filters),
-  // });
-
-  // const { selectProps: userSelectProps } = useSelect<IUser>({
-  //   resource: "users",
-  //   optionLabel: "fullName",
-  //   defaultValue: getDefaultFilter("user.id", filters),
-  // });
 
   const { RangePicker } = DatePicker;
 
@@ -269,10 +420,11 @@ const Filter: React.FC<{ formProps: FormProps; filters: CrudFilters }> = (
     const start = getDefaultFilter("createdAt", filters, "gte");
     const end = getDefaultFilter("createdAt", filters, "lte");
 
-    const startFrom = dayjs(start);
-    const endAt = dayjs(end);
+    const startFrom = dayjs(start).format("DD/MM/YYYY");
+    const endAt = dayjs(end).format("DD/MM/YYYY");
 
     if (start && end) {
+      console.log(startFrom, endAt);
       return [startFrom, endAt];
     }
     return undefined;
@@ -296,33 +448,18 @@ const Filter: React.FC<{ formProps: FormProps; filters: CrudFilters }> = (
             <Input placeholder="Поиск" prefix={<SearchOutlined />} />
           </Form.Item>
         </Col>
-        {/* <Col xl={24} md={8} sm={12} xs={24}>
-          <Form.Item label={t("orders.filter.status.label")} name="status">
-            <Select
-              {...orderSelectProps}
-              allowClear
-              mode="multiple"
-              placeholder={t("orders.filter.status.placeholder")}
-            />
-          </Form.Item>
-        </Col> */}
         <Col xl={24} md={8} sm={12} xs={24}>
           <Form.Item label="Поставщик" name="store">
-            <Select {...storeSelectProps} allowClear placeholder="Поставщик" />
-          </Form.Item>
-        </Col>
-        {/* <Col xl={24} md={8} sm={12} xs={24}>
-          <Form.Item label={t("orders.filter.user.label")} name="user">
             <Select
-              {...userSelectProps}
+              {...providerSelectProps}
               allowClear
-              placeholder={t("orders.filter.user.placeholder")}
+              placeholder="Поставщик"
             />
           </Form.Item>
-        </Col> */}
+        </Col>
         <Col xl={24} md={8} sm={12} xs={24}>
           <Form.Item label="По дате создание" name="createdAt">
-            <RangePicker style={{ width: "100%" }} />
+            <RangePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
           </Form.Item>
         </Col>
         <Col xl={24} md={8} sm={12} xs={24}>
