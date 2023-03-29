@@ -9,6 +9,14 @@ export interface IUser {
   avatar: string;
 }
 
+export interface IProviderCategory {
+  id: number;
+  nameKz: string;
+  nameEn: string;
+  nameRu: string;
+  photo: IFile[];
+}
+
 export interface IPost {
   id: number;
   title: string;

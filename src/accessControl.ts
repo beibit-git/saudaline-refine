@@ -34,6 +34,10 @@ p, ROLE_ADMIN, city, (list)|(create)
 p, ROLE_ADMIN, city/*, (edit)|(show)|(delete)
 p, ROLE_ADMIN, city/*, field
 
+p, ROLE_ADMIN, provider-category, (list)|(create)
+p, ROLE_ADMIN, provider-category/*, (edit)|(show)|(delete)
+p, ROLE_ADMIN, provider-category/*, field
+
 p, ROLE_PROVIDER, categories, (list)|(create)
 p, ROLE_PROVIDER, categories/*, (edit)|(show)|(delete)
 p, ROLE_PROVIDER, categories/*, field

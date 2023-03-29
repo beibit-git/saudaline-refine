@@ -23,6 +23,12 @@ import {
   ProductEdit,
   ProductShow,
 } from "pages/products";
+import {
+  ProviderCategoryList,
+  ProviderCategoryCreate,
+  ProviderCategoryEdit,
+  ProviderCategoryShow,
+} from "pages/providerCategory";
 import { RegionList } from "pages/regions";
 import authProvider from "providers/authProvider";
 import accessControlProvider from "providers/accessControlProvider";
@@ -92,6 +98,17 @@ const App: React.FC = () => {
             },
           },
           {
+            name: "provider-category",
+            list: "/provider-category",
+            show: "/provider-category/show/:id",
+            create: "/provider-category/create",
+            edit: "/provider-category/edit/:id",
+            meta: {
+              label: "Категория поставщика",
+              canDelete: true,
+            },
+          },
+          {
             name: "brands",
             list: "/brands",
             show: "/brands/show/:id",
@@ -131,6 +148,12 @@ const App: React.FC = () => {
               <Route path="show/:id" element={<AntdInferencer />} />
               <Route path="edit/:id" element={<AntdInferencer />} />
               <Route path="create" element={<AntdInferencer />} />
+            </Route>
+            <Route path="provider-category">
+              <Route index element={<ProviderCategoryList />} />
+              <Route path="show/:id" element={<ProviderCategoryShow />} />
+              <Route path="edit/:id" element={<ProviderCategoryEdit />} />
+              <Route path="create" element={<ProviderCategoryCreate />} />
             </Route>
             <Route path="brands">
               <Route index element={<AntdInferencer />} />
