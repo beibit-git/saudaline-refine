@@ -4,6 +4,7 @@ import {
   CrudFilters,
   HttpError,
   getDefaultFilter,
+  useExport,
 } from "@refinedev/core";
 
 import {
@@ -15,6 +16,7 @@ import {
   List,
   TextField,
   ImageField,
+  ExportButton,
 } from "@refinedev/antd";
 import { CreateProduct, ProductItem, EditProduct } from "components/product";
 
@@ -41,79 +43,11 @@ import { image } from "@uiw/react-md-editor";
 const { Text } = Typography;
 
 export const ProductList: React.FC<IResourceComponentsProps> = () => {
-  const t = useTranslate();
-
-  const {
-    listProps,
-    searchFormProps: searchFormProps,
-    filters: filters,
-  } = useSimpleList<
-    IProduct,
-    HttpError,
-    // { name: string; categories: string[] }
-    IProductFilterVariables
-  >({
-    pagination: { pageSize: 12, current: 1 },
-    onSearch: (params) => {
-      const filters: CrudFilters = [];
-      // const { q, store, user, createdAt, status } = params;
-      const { q, provider, createdAt } = params;
-
-      filters.push({
-        field: "q",
-        operator: "eq",
-        value: q,
-      });
-
-      filters.push({
-        field: "provider.id",
-        operator: "eq",
-        value: provider,
-      });
-
-      filters.push(
-        {
-          field: "createsDate",
-          operator: "gte",
-          value: createdAt
-            ? createdAt[0].startOf("day").toISOString()
-            : undefined,
-        },
-        {
-          field: "createsDate",
-          operator: "lte",
-          value: createdAt
-            ? createdAt[1].endOf("day").toISOString()
-            : undefined,
-        }
-      );
-
-      return filters;
-    },
-    // onSearch: ({ name, categories }) => {
-    //   const productFilters: CrudFilters = [];
-
-    //   productFilters.push({
-    //     field: "category.id",
-    //     operator: "in",
-    //     value: categories?.length > 0 ? categories : undefined,
-    //   });
-
-    //   productFilters.push({
-    //     field: "name",
-    //     operator: "contains",
-    //     value: name ? name : undefined,
-    //   });
-
-    //   return productFilters;
-    // },
-  });
-
   const {
     tableProps,
     sorter,
-    searchFormProps: searchFormPropsTable,
-    filters: filtersTable,
+    searchFormProps: searchFormProps,
+    filters: filters,
   } = useTable<IProduct, HttpError, IProductFilterVariables>({
     onSearch: (params) => {
       const filters: CrudFilters = [];
@@ -131,18 +65,6 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
         operator: "eq",
         value: provider,
       });
-
-      // filters.push({
-      //     field: "user.id",
-      //     operator: "eq",
-      //     value: user,
-      // });
-
-      // filters.push({
-      //     field: "status.text",
-      //     operator: "in",
-      //     value: status,
-      // });
 
       filters.push(
         {
@@ -188,6 +110,27 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     redirect: false,
   });
 
+  const { isLoading, triggerExport } = useExport<IProduct>({
+    sorter,
+    filters,
+    pageSize: 50,
+    maxItemCount: 50,
+    mapData: (item) => {
+      return {
+        id: item.id,
+        // amount: item.amount,
+        // orderNumber: item.orderNumber,
+        // status: item.status.text,
+        provider: item.provider.name,
+        // user: item.user.firstName,
+      };
+    },
+  });
+
+  const Actions: React.FC = () => (
+    <ExportButton onClick={triggerExport} loading={isLoading} />
+  );
+
   return (
     <div>
       <Row gutter={[16, 16]}>
@@ -204,86 +147,34 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
           </Card>
         </Col>
         <Col xl={18} xs={24}>
-          <Form
-            {...searchFormProps}
-            onValuesChange={() => {
-              searchFormProps.form?.submit();
-            }}
-            initialValues={{
-              name: getDefaultFilter("name", filters, "contains"),
-              categories: getDefaultFilter("category.id", filters, "in"),
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: "8px",
-                marginBottom: "16px",
-              }}
-            >
-              <Text style={{ fontSize: "24px" }} strong>
-                Товары
-              </Text>
-              <Form.Item name="name" noStyle>
-                <Input
-                  style={{
-                    width: "400px",
-                  }}
-                  placeholder="Поиск товара"
-                  suffix={<SearchOutlined />}
-                />
-              </Form.Item>
-
+          <List
+            headerButtons={
               <CreateButton onClick={() => createShow()}>
                 Добавить товар
               </CreateButton>
-            </div>
-            {/* <AntdList
-              grid={{
-                gutter: 8,
-                xs: 1,
-                sm: 1,
-                md: 2,
-                lg: 3,
-                xl: 4,
-                xxl: 5,
-              }}
-              style={{
-                height: "100%",
-                // overflow: "auto",
-                paddingRight: "4px",
-              }}
-              {...listProps}
-              renderItem={(item) => (
-                <ProductItem item={item} editShow={editShow} />
-              )}
-            /> */}
-            <List
+            }
             // headerProps={{
             //   extra: <Actions />,
             // }}
+          >
+            <Table
+              {...tableProps}
+              rowKey="id"
+              onRow={(record) => {
+                return {
+                  // onClick: () => {
+                  //   show("orders", record.id);
+                  // },
+                };
+              }}
             >
-              <Table
-                {...tableProps}
-                rowKey="id"
-                onRow={(record) => {
-                  return {
-                    // onClick: () => {
-                    //   show("orders", record.id);
-                    // },
-                  };
-                }}
-              >
-                <Table.Column
-                  key="id"
-                  dataIndex="id"
-                  title="id"
-                  render={(value) => <TextField value={value} />}
-                />
-                {/* <Table.Column<IProduct>
+              <Table.Column
+                key="id"
+                dataIndex="id"
+                title="id"
+                render={(value) => <TextField value={value} />}
+              />
+              {/* <Table.Column<IProduct>
                   key="status.text"
                   dataIndex={["status", "text"]}
                   title={t("orders.fields.status")}
@@ -293,97 +184,85 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
                   defaultSortOrder={getDefaultSortOrder("status.text", sorter)}
                   sorter
                 /> */}
-                <Table.Column<IProduct>
-                  key="mainPhoto.id"
-                  dataIndex={["mainPhoto", "url"]}
-                  title="Фото"
-                  render={(_, record) => {
-                    console.log(record.mainPhoto[0].url);
-                    return (
-                      <ImageField
-                        value={record.mainPhoto[0].url}
-                        title={record.mainPhoto[0].name}
-                        width={100}
-                      />
-                    );
-                  }}
-                />
-                {/* { title: '', dataIndex: 'flag', key: 'flag', render: flag => ( <img src={'${flag}'} style={{ height: '10%' }} /> ), width: '15%', } */}
-                <Table.Column
-                  key="title"
-                  dataIndex={["title"]}
-                  title="Названия"
-                />
-                <Table.Column
-                  align="right"
-                  key="amount"
-                  dataIndex="amount"
-                  title="Количество"
-                  // defaultSortOrder={getDefaultSortOrder("amount", sorter)}
-                  sorter
-                  // render={(value) => {
-                  //   return (
-                  //     <NumberField
-                  //       options={{
-                  //         currency: "USD",
-                  //         style: "currency",
-                  //       }}
-                  //       value={value / 100}
-                  //     />
-                  //   );
-                  // }}
-                />
+              <Table.Column<IProduct>
+                key="mainPhoto.id"
+                dataIndex={["mainPhoto", "url"]}
+                title="Фото"
+                render={(_, record) => {
+                  return (
+                    <ImageField
+                      value={record.mainPhoto[0].url}
+                      title={record.mainPhoto[0].name}
+                      width={100}
+                    />
+                  );
+                }}
+              />
+              <Table.Column
+                key="title"
+                dataIndex={["title"]}
+                title="Названия"
+              />
+              <Table.Column
+                key="category.id"
+                dataIndex={["category", "title"]}
+                title="Категория"
+              />
+              <Table.Column
+                key="category.id"
+                dataIndex={["subcategory", "title"]}
+                title="Подкатегория"
+              />
+              <Table.Column
+                align="right"
+                key="amount"
+                dataIndex="amount"
+                title="Количество"
+                // defaultSortOrder={getDefaultSortOrder("amount", sorter)}
+                sorter
+                // render={(value) => {
+                //   return (
+                //     <NumberField
+                //       options={{
+                //         currency: "USD",
+                //         style: "currency",
+                //       }}
+                //       value={value / 100}
+                //     />
+                //   );
+                // }}
+              />
 
-                <Table.Column
-                  key="provider.id"
-                  dataIndex={["provider", "name"]}
-                  title="Поставщик"
-                />
-                <Table.Column
-                  key="category.id"
-                  dataIndex={["category", "title"]}
-                  title="Категория"
-                />
-                <Table.Column<IProduct>
-                  key="price"
-                  dataIndex="price"
-                  title="Цена"
-                  // render={(_, record) => (
-                  //   <Popover
-                  //     content={
-                  //       <ul>
-                  //         {record.products.map((product) => (
-                  //           <li key={product.id}>{product.name}</li>
-                  //         ))}
-                  //       </ul>
-                  //     }
-                  //     title="Products"
-                  //     trigger="hover"
-                  //   >
-                  //     {t("orders.fields.itemsAmount", {
-                  //       amount: record.products.length,
-                  //     })}
-                  //   </Popover>
-                  // )}
-                />
-                {/* <Table.Column
-                  key="createdAt"
-                  dataIndex="createdAt"
-                  title={t("orders.fields.createdAt")}
-                  render={(value) => <DateField value={value} format="LLL" />}
-                  sorter
-                /> */}
-                {/* <Table.Column<IOrder>
-                  fixed="right"
-                  title={t("table.actions")}
-                  dataIndex="actions"
-                  key="actions"
-                  align="center"
-                  render={(_value, record) => <OrderActions record={record} />}
-                /> */}
-              </Table>
-            </List>
-          </Form>
+              {/* <Table.Column
+                key="provider.id"
+                dataIndex={["provider", "name"]}
+                title="Поставщик"
+              /> */}
+
+              <Table.Column<IProduct>
+                key="price"
+                dataIndex="price"
+                title="Цена"
+                // render={(_, record) => (
+                //   <Popover
+                //     content={
+                //       <ul>
+                //         {record.products.map((product) => (
+                //           <li key={product.id}>{product.name}</li>
+                //         ))}
+                //       </ul>
+                //     }
+                //     title="Products"
+                //     trigger="hover"
+                //   >
+                //     {t("orders.fields.itemsAmount", {
+                //       amount: record.products.length,
+                //     })}
+                //   </Popover>
+                // )}
+              />
+            </Table>
+          </List>
         </Col>
       </Row>
       <CreateProduct
