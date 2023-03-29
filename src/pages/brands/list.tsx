@@ -5,15 +5,13 @@ import {
   List,
   EditButton,
   ShowButton,
-  ImageField,
   DeleteButton,
-  TextField,
+  ImageField,
 } from "@refinedev/antd";
 import { Table, Space } from "antd";
+import { IBrands } from "interfaces";
 
-import { IProviderCategory } from "interfaces";
-
-export const ProviderCategoryList: React.FC<IResourceComponentsProps> = () => {
+export const BrandsList: React.FC<IResourceComponentsProps> = () => {
   const { tableProps } = useTable({
     syncWithLocation: true,
   });
@@ -21,23 +19,21 @@ export const ProviderCategoryList: React.FC<IResourceComponentsProps> = () => {
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column<IProviderCategory>
-          key="photo.id"
-          dataIndex={["photo", "url"]}
+        <Table.Column<IBrands>
+          key="logo.id"
+          dataIndex={["logo", "url"]}
           title="Картинка"
           render={(_, record) => {
             return (
               <ImageField
-                value={record.photo[0]?.url}
-                title={record.photo[0]?.name}
+                value={record.logo[0]?.url}
+                title={record.logo[0]?.name}
                 width={100}
               />
             );
           }}
         />
-        <Table.Column dataIndex="nameKz" title="Название на казахском языке" />
-        <Table.Column dataIndex="nameRu" title="Название на русском языке" />
-        <Table.Column dataIndex="nameEn" title="Название на английском языке" />
+        <Table.Column dataIndex="name" title="Название" />
         <Table.Column
           title="Действия"
           dataIndex="actions"

@@ -23,6 +23,7 @@ import {
   ProductEdit,
   ProductShow,
 } from "pages/products";
+import { BrandsList, BrandsCreate, BrandsEdit, BrandsShow } from "pages/brands";
 import {
   ProviderCategoryList,
   ProviderCategoryCreate,
@@ -115,7 +116,7 @@ const App: React.FC = () => {
             create: "/brands/create",
             edit: "/brands/edit/:id",
             meta: {
-              label: "Бренды",
+              label: "Торговая марка",
               canDelete: true,
             },
           },
@@ -156,10 +157,10 @@ const App: React.FC = () => {
               <Route path="create" element={<ProviderCategoryCreate />} />
             </Route>
             <Route path="brands">
-              <Route index element={<AntdInferencer />} />
-              <Route path="show/:id" element={<AntdInferencer />} />
-              <Route path="edit/:id" element={<AntdInferencer />} />
-              <Route path="create" element={<AntdInferencer />} />
+              <Route index element={<BrandsList />} />
+              <Route path="show/:id" element={<BrandsShow />} />
+              <Route path="edit/:id" element={<BrandsEdit />} />
+              <Route path="create" element={<BrandsCreate />} />
             </Route>
             <Route path="product">
               <Route index element={<ProductList />} />

@@ -120,6 +120,7 @@ export interface IRegion {
 export interface IBrands {
   id: number;
   name: string;
+  logo: IFile[];
 }
 
 export interface IProviderCategory {
