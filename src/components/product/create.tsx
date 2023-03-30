@@ -250,15 +250,7 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
             <Input value={user?.id} disabled />
           </Form.Item>
           {selectCategory ? (
-            <Form.Item
-              label="Подкатегория"
-              name={["subCategory", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
+            <Form.Item label="Подкатегория" name={["subCategory", "id"]}>
               <Select {...subCategorySelectProps} />
             </Form.Item>
           ) : null}
