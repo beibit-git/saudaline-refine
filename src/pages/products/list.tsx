@@ -43,6 +43,9 @@ import { image } from "@uiw/react-md-editor";
 const { Text } = Typography;
 
 export const ProductList: React.FC<IResourceComponentsProps> = () => {
+  const user = localStorage.getItem("user");
+  const { id } = JSON.parse(user!);
+  const userId = id;
   const {
     tableProps,
     sorter,
@@ -84,6 +87,15 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
       );
 
       return filters;
+    },
+    filters: {
+      initial: [
+        {
+          field: "userId",
+          operator: "eq",
+          value: userId,
+        },
+      ],
     },
   });
 

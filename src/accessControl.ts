@@ -50,6 +50,10 @@ p, ROLE_PROVIDER, product, (list)|(create)
 p, ROLE_PROVIDER, product/*, (edit)|(show)|(delete)
 p, ROLE_PROVIDER, product/*, field
 
+p, ROLE_PROVIDER, orders, (list)
+p, ROLE_PROVIDER, orders/*, (edit)|(show)
+p, ROLE_PROVIDER, orders/*, field
+
 p, ROLE_CUSTOMER, categories, list
 p, ROLE_CUSTOMER, categories/actions, field, deny
 

@@ -123,6 +123,44 @@ export interface IBrands {
   logo: IFile[];
 }
 
+export interface IOrder {
+  id: number;
+  status: "NEW" | "APPROVED" | "CANCELED" | "CLOSED";
+  created: Date;
+  customer: ICustomer;
+  details: IDeliveryDetails[];
+  provider: IProvider;
+  totalAmount: number;
+  totalQuantity: number;
+  updated: Date;
+}
+
+export interface ICustomer {
+  address: string;
+  alcoholLicense: string;
+  businessLicense: string;
+  businessNumber: string;
+  businessType: IBusinessType;
+  city: ICity;
+  id: number;
+  logotype: IFile[];
+  name: string;
+  phone: string;
+  userId: number;
+}
+
+export interface IDeliveryDetails {
+  id: number;
+  address: string;
+  city: ICity;
+  comment: string;
+  customer: ICustomer;
+  email: string;
+  fio: string;
+  region: IRegion;
+  tel: string;
+}
+
 export interface IProviderCategory {
   id: number;
   nameKz: string;

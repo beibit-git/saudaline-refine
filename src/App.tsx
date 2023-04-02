@@ -23,6 +23,7 @@ import {
   ProductEdit,
   ProductShow,
 } from "pages/products";
+import { OrderList } from "pages/orders";
 import { BrandsList, BrandsCreate, BrandsEdit, BrandsShow } from "pages/brands";
 import {
   ProviderCategoryList,
@@ -120,6 +121,17 @@ const App: React.FC = () => {
               canDelete: true,
             },
           },
+          {
+            name: "orders",
+            list: "/orders",
+            show: "/orders/show/:id",
+            create: "/orders/create",
+            edit: "/orders/edit/:id",
+            meta: {
+              label: "Заказы",
+              canDelete: true,
+            },
+          },
         ]}
         notificationProvider={notificationProvider}
         options={{
@@ -168,6 +180,13 @@ const App: React.FC = () => {
               <Route path="edit/:id" element={<ProductEdit />} />
               <Route path="create" element={<ProductCreate />} />
             </Route>
+            <Route path="orders">
+              <Route index element={<OrderList />} />
+              <Route path="show/:id" element={<AntdInferencer />} />
+              <Route path="edit/:id" element={<AntdInferencer />} />
+              <Route path="create" element={<AntdInferencer />} />
+            </Route>
+
             <Route path="*" element={<ErrorComponent />} />
           </Route>
         </Routes>
