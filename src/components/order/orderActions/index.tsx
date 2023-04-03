@@ -50,12 +50,12 @@ export const OrderActions: React.FC<OrderActionProps> = ({ record }) => {
             resource: "orders",
             id: record.id,
             values: {
-              orderStatus: IOrderStatus.APPROVED,
+              orderStatus: "APPROVED",
             },
           });
         }}
       >
-        {t("buttons.accept")}
+        Принимать
       </Menu.Item>
       <Menu.Item
         key="reject"
@@ -79,12 +79,12 @@ export const OrderActions: React.FC<OrderActionProps> = ({ record }) => {
             resource: "orders",
             id: record.id,
             values: {
-              status: "CANCELED",
+              orderStatus: "CANCELED",
             },
           })
         }
       >
-        {t("buttons.reject")}
+        Отклонять
       </Menu.Item>
     </Menu>
   );

@@ -15,7 +15,7 @@ export const Header: React.FC = () => {
   const { data: user } = useGetIdentity<IUser>();
   const { mode, setMode } = useContext(ColorModeContext);
   function handleChangeMode() {
-    setMode(mode === "light" ? "dark" : "light");
+    mode === "light" ? setMode("dark") : setMode("light");
   }
 
   return (

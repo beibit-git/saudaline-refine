@@ -1,0 +1,11 @@
+.customer-details {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+.customer-details div {
+  width: 50%;
+}

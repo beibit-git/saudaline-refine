@@ -49,6 +49,7 @@ export interface IProduct {
   category: ICategories;
   subCategory: ISubcategory;
   provider: IProvider;
+  createsDate: string;
   // status: "published" | "draft" | "rejected";
   // category: { id: number };
 }
@@ -123,12 +124,20 @@ export interface IBrands {
   logo: IFile[];
 }
 
+export interface IOrderDetails {
+  product: IProduct;
+  id: number;
+  price: number;
+  quantity: number;
+}
+
 export interface IOrder {
   id: number;
   status: "NEW" | "APPROVED" | "CANCELED" | "CLOSED";
   created: Date;
   customer: ICustomer;
-  details: IDeliveryDetails[];
+  deliveryDetails: IDeliveryDetails;
+  details: IOrderDetails[];
   provider: IProvider;
   totalAmount: number;
   totalQuantity: number;
