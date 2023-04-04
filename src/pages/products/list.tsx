@@ -5,6 +5,7 @@ import {
   HttpError,
   getDefaultFilter,
   useExport,
+  useNavigation,
 } from "@refinedev/core";
 
 import {
@@ -43,6 +44,7 @@ import { image } from "@uiw/react-md-editor";
 const { Text } = Typography;
 
 export const ProductList: React.FC<IResourceComponentsProps> = () => {
+  const { show } = useNavigation();
   const user = localStorage.getItem("user");
   const { id } = JSON.parse(user!);
   const userId = id;
@@ -174,9 +176,9 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
               rowKey="id"
               onRow={(record) => {
                 return {
-                  // onClick: () => {
-                  //   show("orders", record.id);
-                  // },
+                  onClick: () => {
+                    show("product", record.id);
+                  },
                 };
               }}
             >

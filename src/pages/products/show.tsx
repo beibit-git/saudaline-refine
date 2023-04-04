@@ -6,8 +6,9 @@ import {
   TagField,
   TextField,
   DateField,
+  ImageField,
 } from "@refinedev/antd";
-import { Typography } from "antd";
+import { Typography, Col, Row } from "antd";
 
 const { Title } = Typography;
 
@@ -19,30 +20,45 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
 
   return (
     <Show isLoading={isLoading}>
-      <Title level={5}>Id</Title>
-      <NumberField value={record?.id ?? ""} />
-      <Title level={5}>Title</Title>
-      <TextField value={record?.title} />
-      <Title level={5}>Description</Title>
-      <TextField value={record?.description} />
-      <Title level={5}>Brand</Title>
-      {/* {brandIsLoading ? <>Loading...</> : <>{brandData?.data?.id}</>} */}
-      <Title level={5}>Main Photo</Title>
-      <NumberField value={record?.mainPhoto ?? ""} />
-      <Title level={5}>Photos</Title>
-      <NumberField value={record?.photos ?? ""} />
-      <Title level={5}>Unit Type</Title>
-      <TextField value={record?.unitType?.name} />
-      <Title level={5}>Hits</Title>
-      <NumberField value={record?.hits ?? ""} />
-      <Title level={5}>Creates Date</Title>
-      <DateField value={record?.createsDate} />
-      <Title level={5}>Category</Title>
-      {/* {categoryIsLoading ? <>Loading...</> : <>{categoryData?.data?.id}</>} */}
-      <Title level={5}>Sub Category</Title>
-      <TextField value={record?.subCategory?.title} />
-      <Title level={5}>Provider</Title>
-      <TextField value={record?.provider?.name} />
+      <Row>
+        <Col span={8}>
+          <ImageField
+            value={record?.mainPhoto[0].url}
+            title={record?.mainPhoto[0].name}
+            width={"95%"}
+          />
+          {/* <img src={record?.mainPhoto[0].url} alt="" width={"100%"} /> */}
+        </Col>
+        <Col span={15}>
+          <TextField
+            value={record?.title}
+            style={{ fontSize: 18, fontWeight: "bold" }}
+          />
+          <Title level={5}>
+            <strong>Номер товара:</strong>{" "}
+            <NumberField value={record?.id ?? ""} />
+          </Title>
+          <Title level={5}>
+            Категория: <TextField value={record?.category.title} />
+          </Title>
+          <Title level={5}>
+            Цена: <TextField value={record?.price} /> тг
+          </Title>
+          <Title level={5}>
+            <strong>Описание товара:</strong>{" "}
+          </Title>
+          <TextField value={record?.description} />
+          <Title level={5}>
+            Поставщик: <TextField value={record?.provider?.name} />
+          </Title>
+          <Title level={5}>
+            Дата добавления товара: <DateField value={record?.created} />
+          </Title>
+          <Title level={5}>
+            Количество просмотров: <TextField value={record?.hits} />
+          </Title>
+        </Col>
+      </Row>
     </Show>
   );
 };
