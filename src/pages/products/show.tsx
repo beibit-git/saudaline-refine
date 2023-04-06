@@ -27,7 +27,6 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
             title={record?.mainPhoto[0].name}
             width={"95%"}
           />
-          {/* <img src={record?.mainPhoto[0].url} alt="" width={"100%"} /> */}
         </Col>
         <Col span={15}>
           <TextField

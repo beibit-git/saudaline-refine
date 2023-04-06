@@ -54,6 +54,20 @@ export interface IProduct {
   // category: { id: number };
 }
 
+export interface IPromotion {
+  id: number;
+  title: string;
+  description: string;
+  subTitle: string;
+  discount: number;
+  isActive: boolean;
+  photo: IFile[];
+  products: IProduct[];
+  provider: IProvider;
+  startDate: Date;
+  finishDate: Date;
+}
+
 export interface IProductFilterVariables {
   q?: string;
   provider?: string;
