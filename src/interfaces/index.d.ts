@@ -68,6 +68,13 @@ export interface IPromotion {
   finishDate: Date;
 }
 
+export interface IPromotionProducts {
+  id: number;
+  isActive: boolean;
+  discount: number;
+  product: IProduct;
+}
+
 export interface IProductFilterVariables {
   q?: string;
   provider?: string;

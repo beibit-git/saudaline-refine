@@ -78,7 +78,7 @@ export const CourierInfoBoxText = styled.div`
 export const CourierBoxContainer = styled(Col)`
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: flex-start;
   color: white;
 
   svg {

@@ -1,5 +1,10 @@
 import React, { ReactNode } from "react";
-import { IResourceComponentsProps, useShow } from "@refinedev/core";
+import {
+  IResourceComponentsProps,
+  useShow,
+  BaseKey,
+  BaseRecord,
+} from "@refinedev/core";
 import {
   Show,
   NumberField,
@@ -7,7 +12,12 @@ import {
   TextField,
   BooleanField,
   DateField,
+  List,
   ImageField,
+  CreateButton,
+  DeleteButton,
+  EditButton,
+  useDrawerForm,
 } from "@refinedev/antd";
 import {
   Courier,
@@ -21,10 +31,12 @@ import {
   ProductFooter,
   ProductText,
 } from "./styled";
-import { Typography, Row, Col, Card, Avatar, Space } from "antd";
+import { Typography, Row, Col, Card, Avatar, Space, Table, Tag } from "antd";
 import { FieldTimeOutlined } from "@ant-design/icons";
 import { BikeWhiteIcon } from "components/icons";
 import { PromotionStatus } from "components/promotion/promotionStatus";
+import { IProduct, IPromotionProducts } from "interfaces";
+import { ProductPromotionEdit } from "components/productPromotions";
 
 const { Title } = Typography;
 const { Text } = Typography;
@@ -34,6 +46,19 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
   const { data, isLoading } = queryResult;
 
   const record = data?.data;
+  const products = data?.data.products;
+
+  const {
+    drawerProps: editDrawerProps,
+    formProps: editFormProps,
+    saveButtonProps: editSaveButtonProps,
+    show: editShow,
+    id: editId,
+  } = useDrawerForm<IProduct>({
+    action: "edit",
+    resource: "promotion-product",
+    redirect: false,
+  });
 
   const promotionStartDate = (
     text: string,
@@ -76,7 +101,11 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
       <Row justify="center">
         <Col xl={12} lg={10}>
           <Courier>
-            <Avatar size={108} src={record?.photo[0]?.url} />
+            <ImageField
+              value={record?.photo[0]?.url}
+              title={record?.photo[0]?.title}
+              width={200}
+            />
             <CourierInfoText>
               <Text>ID #{record?.id}</Text>
               <Text
@@ -90,6 +119,12 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
               <Text>
                 Статус акции: <PromotionStatus status={record?.isActive} />
               </Text>
+              <Title level={5}>Поставщик</Title>
+              <TextField value={record?.provider?.name} />
+              <Title level={5}>Подзаголовок</Title>
+              <TextField value={record?.subTitle} />
+              <Title level={5}>Описание</Title>
+              <TextField value={record?.description} />
             </CourierInfoText>
           </Courier>
         </Col>
@@ -105,33 +140,121 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
             record?.finishDate
           )}
         </CourierBoxContainer>
-        {/* <Col xl={12} lg={10} className="customer-details">
-          <Col>
-            <Text>
-              <strong>ФИО заказчика:</strong> {order?.deliveryDetails.fio}
-            </Text>
-            <br />
-            <Text>
-              <strong>Телефон:</strong> {order?.deliveryDetails.tel}
-            </Text>
-            <br />
-          </Col>
-          <Col>
-            <Text>
-              <strong>Эл. почта:</strong> {order?.deliveryDetails.email}
-            </Text>
-            <br />
-            <Text>
-              <strong>Регион:</strong> {order?.deliveryDetails.region.nameRu}
-              {"   "}
-              <strong>Город:</strong>
-              {order?.deliveryDetails.city.name}
-            </Text>
-          </Col>
-        </Col> */}
-        {/* <Col xl={12} lg={10}></Col> */}
       </Row>
     </Card>
+  );
+
+  const renderProducts = () => (
+    <List
+      headerProps={{ style: { marginTop: 20 } }}
+      canCreate={false}
+      title={<Text style={{ fontSize: 22, fontWeight: 800 }}>Товары</Text>}
+    >
+      <Table pagination={false} dataSource={products}>
+        <Table.Column<IPromotionProducts>
+          defaultSortOrder="descend"
+          sorter={(a: IPromotionProducts, b: IPromotionProducts) =>
+            a.product.title > b.product.title ? 1 : -1
+          }
+          dataIndex="name"
+          title="Товар"
+          render={(value, record) => (
+            <Product>
+              <Avatar
+                size={{
+                  md: 60,
+                  lg: 108,
+                  xl: 108,
+                  xxl: 108,
+                }}
+                src={record?.product?.mainPhoto[0]?.url}
+              />
+              <ProductText>
+                <Text style={{ fontWeight: 700 }}>
+                  {record?.product?.title}
+                </Text>
+                <Text>#{record.id}</Text>
+              </ProductText>
+            </Product>
+          )}
+        />
+        <Table.Column<IPromotionProducts>
+          title="Является активным"
+          dataIndex="isActive"
+          align="center"
+          render={(value: any) => <BooleanField value={value} />}
+        />
+        <Table.Column<IPromotionProducts>
+          title="Цена без скидки"
+          dataIndex="discount"
+          sorter={(a: IPromotionProducts, b: IPromotionProducts) =>
+            a.product.price - b.product.price
+          }
+          render={(value, record) => (
+            <Text style={{ fontWeight: 600, fontSize: "18px" }}>
+              {record.product.price} ₸
+            </Text>
+          )}
+        />
+        <Table.Column<IPromotionProducts>
+          title="Скидка"
+          dataIndex="discount"
+          align="center"
+          sorter={(a: IPromotionProducts, b: IPromotionProducts) =>
+            a.discount - b.discount
+          }
+          render={(value, record) => (
+            <Tag style={{ fontWeight: 600, fontSize: "18px" }} color={"green"}>
+              {record.discount} %
+            </Tag>
+          )}
+        />
+        <Table.Column<IPromotionProducts>
+          title="Цена со скидкой"
+          dataIndex="discount"
+          align="center"
+          sorter={(a: IPromotionProducts, b: IPromotionProducts) =>
+            a.product.price -
+            (a.product.price / 100) * a.discount -
+            (b.product.price - (b.product.price / 100) * b.discount)
+          }
+          render={(value, record) => (
+            <Text style={{ fontWeight: 600, fontSize: "18px" }}>
+              {record.product.price -
+                (record.product.price / 100) * record.discount}
+              ₸
+            </Text>
+          )}
+        />
+        <Table.Column<IPromotionProducts>
+          title="Действия"
+          key="actions"
+          align="center"
+          dataIndex="actions"
+          render={(_text, record) => {
+            return (
+              <Space>
+                <EditButton
+                  hideText
+                  size="small"
+                  resource="promotion-product"
+                  onClick={() => editShow(record.id)}
+                  // onClick={() => {
+                  //   setEditId?.((record as BaseRecord).id as BaseKey);
+                  // }}
+                />
+                <DeleteButton
+                  hideText
+                  size="small"
+                  recordItemId={(record as BaseRecord).id as BaseKey}
+                  resource="promotion-product"
+                />
+              </Space>
+            );
+          }}
+        />
+      </Table>
+    </List>
   );
 
   return (
@@ -140,37 +263,13 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
         {/* {renderOrderSteps()} */}
         {renderCourierInfo()}
       </Space>
-      <Row>
-        <Col span={15}>
-          <TextField
-            value={record?.title}
-            style={{ fontSize: 18, fontWeight: "bold" }}
-          />
-          <Title level={5}>Подзаголовок</Title>
-          <TextField value={record?.subTitle} />
-          <Title level={5}>Описание</Title>
-          <TextField value={record?.description} />
-          <Title level={5}>Скидка</Title>
-          <NumberField value={record?.discount ?? ""} />
-          <Title level={5}>Является активным</Title>
-          <BooleanField value={record?.isActive} />
-          <Title level={5}>Дата начала</Title>
-          <DateField value={record?.startDate} />
-          <Title level={5}>Дата окончания</Title>
-          <DateField value={record?.finishDate} />
-          <Title level={5}>Products</Title>
-          {/* {productsIsLoading ? <>Loading...</> : <></>} */}
-          <Title level={5}>Поставщик</Title>
-          <TextField value={record?.provider?.name} />
-        </Col>
-        <Col span={8}>
-          <ImageField
-            value={record?.photo[0]?.url}
-            title={record?.photo[0]?.name}
-            width={"95%"}
-          />
-        </Col>
-      </Row>
+      {renderProducts()}
+      <ProductPromotionEdit
+        drawerProps={editDrawerProps}
+        formProps={editFormProps}
+        saveButtonProps={editSaveButtonProps}
+        editId={editId}
+      />
     </Show>
   );
 };

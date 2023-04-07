@@ -54,6 +54,10 @@ p, ROLE_PROVIDER, promotion, (list)|(create)
 p, ROLE_PROVIDER, promotion/*, (edit)|(show)|(delete)
 p, ROLE_PROVIDER, promotion/*, field
 
+p, ROLE_PROVIDER, promotion-product, (list)|(create)
+p, ROLE_PROVIDER, promotion-product/*, (edit)|(show)|(delete)
+p, ROLE_PROVIDER, promotion-product/*, field
+
 p, ROLE_PROVIDER, orders, (list)
 p, ROLE_PROVIDER, orders/*, (edit)|(show)
 p, ROLE_PROVIDER, orders/*, field

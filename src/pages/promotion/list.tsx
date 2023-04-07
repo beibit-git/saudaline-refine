@@ -32,7 +32,7 @@ export const PromotionList: React.FC<IResourceComponentsProps> = () => {
       productIds.push(productItem.id);
     });
   });
-
+  console.log(tableProps);
   const { data, isLoading } = useMany<IProduct>({
     resource: "product",
     ids: productIds,

@@ -1,7 +1,15 @@
 import { useContext } from "react";
 import { useGetIdentity } from "@refinedev/core";
-import { Layout as AntdLayout, Space, Avatar, Typography, Switch } from "antd";
-import { ColorModeContext } from "../../contexts/color-mode";
+import {
+  Layout as AntdLayout,
+  Space,
+  Avatar,
+  Typography,
+  Switch,
+  Button,
+} from "antd";
+import { IconMoon, IconSun } from "components/icons";
+import { useConfigProvider } from "contexts";
 
 const { Text } = Typography;
 
@@ -13,7 +21,8 @@ type IUser = {
 
 export const Header: React.FC = () => {
   const { data: user } = useGetIdentity<IUser>();
-  const { mode, setMode } = useContext(ColorModeContext);
+  const { mode, setMode } = useConfigProvider();
+  // const { mode, setMode } = useContext(ColorModeContext);
   function handleChangeMode() {
     mode === "light" ? setMode("dark") : setMode("light");
   }
@@ -30,12 +39,24 @@ export const Header: React.FC = () => {
       }}
     >
       <Space>
-        <Switch
+        <Button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          type="default"
+          icon={mode === "light" ? <IconMoon /> : <IconSun />}
+          onClick={() => {
+            setMode(mode === "light" ? "dark" : "light");
+          }}
+        />
+        {/* <Switch
           checkedChildren="🌛"
           unCheckedChildren="🔆"
           onChange={handleChangeMode}
           defaultChecked={mode === "dark"}
-        />
+        /> */}
         <Space style={{ marginLeft: "8px" }}>
           {user?.name && (
             <Text style={{ color: "black" }} strong>
