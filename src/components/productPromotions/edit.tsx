@@ -50,10 +50,6 @@ export const ProductPromotionEdit: React.FC<EditProductPromotionProps> = ({
   const breakpoint = Grid.useBreakpoint();
   const { data: user } = useGetIdentity<IUser>();
 
-  const setProductId = (id: any) => {
-    console.log(id);
-  };
-
   return (
     <Drawer
       {...drawerProps}

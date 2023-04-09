@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import {
   IResourceComponentsProps,
   useShow,
@@ -18,6 +18,7 @@ import {
   DeleteButton,
   EditButton,
   useDrawerForm,
+  RefreshButton,
 } from "@refinedev/antd";
 import {
   Courier,
@@ -31,12 +32,25 @@ import {
   ProductFooter,
   ProductText,
 } from "./styled";
-import { Typography, Row, Col, Card, Avatar, Space, Table, Tag } from "antd";
+import {
+  Typography,
+  Row,
+  Col,
+  Card,
+  Avatar,
+  Space,
+  Table,
+  Tag,
+  Button,
+} from "antd";
 import { FieldTimeOutlined } from "@ant-design/icons";
 import { BikeWhiteIcon } from "components/icons";
 import { PromotionStatus } from "components/promotion/promotionStatus";
 import { IProduct, IPromotionProducts } from "interfaces";
-import { ProductPromotionEdit } from "components/productPromotions";
+import {
+  ProductPromotionEdit,
+  ProductPromotionProduct,
+} from "components/productPromotions";
 
 const { Title } = Typography;
 const { Text } = Typography;
@@ -44,9 +58,21 @@ const { Text } = Typography;
 export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
   const { queryResult } = useShow();
   const { data, isLoading } = queryResult;
+  const products = data?.data.products;
 
   const record = data?.data;
-  const products = data?.data.products;
+
+  const {
+    drawerProps: createDrawerProps,
+    formProps: createFormProps,
+    saveButtonProps: createSaveButtonProps,
+    show: createShow,
+    id: promotionId,
+  } = useDrawerForm<IPromotionProducts>({
+    action: "create",
+    resource: "promotion-product",
+    redirect: false,
+  });
 
   const {
     drawerProps: editDrawerProps,
@@ -54,7 +80,7 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
     saveButtonProps: editSaveButtonProps,
     show: editShow,
     id: editId,
-  } = useDrawerForm<IProduct>({
+  } = useDrawerForm<IPromotionProducts>({
     action: "edit",
     resource: "promotion-product",
     redirect: false,
@@ -99,13 +125,8 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
   const renderCourierInfo = () => (
     <Card>
       <Row justify="center">
-        <Col xl={12} lg={10}>
+        <Col xl={16} lg={14}>
           <Courier>
-            <ImageField
-              value={record?.photo[0]?.url}
-              title={record?.photo[0]?.title}
-              width={200}
-            />
             <CourierInfoText>
               <Text>ID #{record?.id}</Text>
               <Text
@@ -128,17 +149,22 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
             </CourierInfoText>
           </Courier>
         </Col>
-        <CourierBoxContainer xl={12} lg={14} md={24}>
+        <CourierBoxContainer xl={8} lg={10} md={24}>
           {promotionStartDate(
             "Дата начала",
-            <FieldTimeOutlined style={{ color: "#ffff", fontSize: 32 }} />,
+            <FieldTimeOutlined style={{ color: "#ffff", fontSize: 28 }} />,
             record?.startDate
           )}
           {promotionFinishDate(
             "Дата окончания",
-            <FieldTimeOutlined style={{ color: "#ffff", fontSize: 32 }} />,
+            <FieldTimeOutlined style={{ color: "#ffff", fontSize: 28 }} />,
             record?.finishDate
           )}
+          <ImageField
+            value={record?.photo[0]?.url}
+            title={record?.photo[0]?.title}
+            width={"80%"}
+          />
         </CourierBoxContainer>
       </Row>
     </Card>
@@ -146,8 +172,16 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
 
   const renderProducts = () => (
     <List
+      breadcrumb={false}
       headerProps={{ style: { marginTop: 20 } }}
-      canCreate={false}
+      headerButtons={
+        <>
+          <RefreshButton />
+          <Button type="primary" onClick={() => createShow(record?.id)}>
+            Добавить товар
+          </Button>
+        </>
+      }
       title={<Text style={{ fontSize: 22, fontWeight: 800 }}>Товары</Text>}
     >
       <Table pagination={false} dataSource={products}>
@@ -188,11 +222,11 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
           title="Цена без скидки"
           dataIndex="discount"
           sorter={(a: IPromotionProducts, b: IPromotionProducts) =>
-            a.product.price - b.product.price
+            a.product?.price - b.product?.price
           }
           render={(value, record) => (
             <Text style={{ fontWeight: 600, fontSize: "18px" }}>
-              {record.product.price} ₸
+              {record?.product?.price} ₸
             </Text>
           )}
         />
@@ -201,11 +235,11 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
           dataIndex="discount"
           align="center"
           sorter={(a: IPromotionProducts, b: IPromotionProducts) =>
-            a.discount - b.discount
+            a?.discount - b?.discount
           }
           render={(value, record) => (
             <Tag style={{ fontWeight: 600, fontSize: "18px" }} color={"green"}>
-              {record.discount} %
+              {record?.discount} %
             </Tag>
           )}
         />
@@ -214,15 +248,11 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
           dataIndex="discount"
           align="center"
           sorter={(a: IPromotionProducts, b: IPromotionProducts) =>
-            a.product.price -
-            (a.product.price / 100) * a.discount -
-            (b.product.price - (b.product.price / 100) * b.discount)
+            a?.discountPrice - b?.discountPrice
           }
           render={(value, record) => (
             <Text style={{ fontWeight: 600, fontSize: "18px" }}>
-              {record.product.price -
-                (record.product.price / 100) * record.discount}
-              ₸
+              {record?.discountPrice}₸
             </Text>
           )}
         />
@@ -239,9 +269,6 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
                   size="small"
                   resource="promotion-product"
                   onClick={() => editShow(record.id)}
-                  // onClick={() => {
-                  //   setEditId?.((record as BaseRecord).id as BaseKey);
-                  // }}
                 />
                 <DeleteButton
                   hideText
@@ -269,6 +296,12 @@ export const PromotionShow: React.FC<IResourceComponentsProps> = () => {
         formProps={editFormProps}
         saveButtonProps={editSaveButtonProps}
         editId={editId}
+      />
+      <ProductPromotionProduct
+        drawerProps={createDrawerProps}
+        formProps={createFormProps}
+        saveButtonProps={createSaveButtonProps}
+        promotionId={promotionId}
       />
     </Show>
   );

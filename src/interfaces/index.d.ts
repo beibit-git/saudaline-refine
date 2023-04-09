@@ -72,6 +72,7 @@ export interface IPromotionProducts {
   id: number;
   isActive: boolean;
   discount: number;
+  discountPrice: number;
   product: IProduct;
 }
 

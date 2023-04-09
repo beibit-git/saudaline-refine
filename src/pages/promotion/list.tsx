@@ -55,50 +55,44 @@ export const PromotionList: React.FC<IResourceComponentsProps> = () => {
         }}
       >
         <Table.Column dataIndex="title" title="Наименование" />
-        <Table.Column dataIndex="discount" title="Скидка" />
         <Table.Column
           dataIndex={["isActive"]}
+          align="center"
           title="Является активным"
           render={(value: any) => <BooleanField value={value} />}
         />
         <Table.Column
           dataIndex={["startDate"]}
+          align="center"
           title="Дата начала"
           render={(value: any) => <DateField value={value} />}
         />
         <Table.Column
           dataIndex={["finishDate"]}
+          align="center"
           title="Дата окончания"
           render={(value: any) => <DateField value={value} />}
         />
         <Table.Column
           dataIndex="products"
+          align="center"
           title="Товары"
           render={(value: any[]) =>
             isLoading ? (
               <>Loading...</>
             ) : (
               <>
-                {value?.map((item, index) => (
+                {value?.length}
+                {/* {value?.map((item, index) => (
                   <>
                     <TagField key={index} value={item.title} />
                   </>
-                ))}
+                ))} */}
               </>
             )
           }
         />
         <Table.Column dataIndex={["provider", "name"]} title="Поставщик" />
-        <Table.Column
-          title="Действия"
-          dataIndex="actions"
-          render={(_, record: BaseRecord) => (
-            <Space>
-              <EditButton hideText size="small" recordItemId={record.id} />
-              <ShowButton hideText size="small" recordItemId={record.id} />
-            </Space>
-          )}
-        />
       </Table>
     </List>
   );

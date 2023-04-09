@@ -24,7 +24,12 @@ import {
   ProductShow,
 } from "pages/products";
 import { OrderList, OrderShow } from "pages/orders";
-import { PromotionList, PromotionShow } from "pages/promotion";
+import {
+  PromotionList,
+  PromotionShow,
+  PromotionCreate,
+  PromotionEdit,
+} from "pages/promotion";
 import { BrandsList, BrandsCreate, BrandsEdit, BrandsShow } from "pages/brands";
 import {
   ProviderCategoryList,
@@ -148,17 +153,6 @@ const App: React.FC = () => {
                   canDelete: true,
                 },
               },
-              {
-                name: "promotion-product",
-                list: "/promotion-product",
-                show: "/promotion-product/show/:id",
-                create: "/promotion-product/create",
-                edit: "/promotion-product/edit/:id",
-                meta: {
-                  label: "Акции товаров",
-                  canDelete: true,
-                },
-              },
             ]}
             notificationProvider={notificationProvider}
             options={{
@@ -219,14 +213,8 @@ const App: React.FC = () => {
                 <Route path="promotion">
                   <Route index element={<PromotionList />} />
                   <Route path="show/:id" element={<PromotionShow />} />
-                  <Route path="edit/:id" element={<AntdInferencer />} />
-                  <Route path="create" element={<AntdInferencer />} />
-                </Route>
-                <Route path="promotion-product">
-                  <Route index element={<AntdInferencer />} />
-                  <Route path="show/:id" element={<AntdInferencer />} />
-                  <Route path="edit/:id" element={<AntdInferencer />} />
-                  <Route path="create" element={<AntdInferencer />} />
+                  <Route path="edit/:id" element={<PromotionEdit />} />
+                  <Route path="create" element={<PromotionCreate />} />
                 </Route>
                 <Route path="*" element={<ErrorComponent />} />
               </Route>

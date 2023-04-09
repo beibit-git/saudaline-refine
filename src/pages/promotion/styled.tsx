@@ -25,6 +25,7 @@ export const PromotionInfoBox = styled.div`
   padding: 10px 13px;
   margin-left: 20px;
   border-radius: 10px;
+  margin-bottom: 20px;
 
   @media screen and (max-width: 1199px) {
     margin-right: 12px;
@@ -49,7 +50,7 @@ export const PromotionFinishDateBox = styled.div`
   padding: 10px 13px;
   margin-left: 20px;
   border-radius: 10px;
-
+  margin-bottom: 20px;
   @media screen and (max-width: 1199px) {
     margin-right: 12px;
     margin-left: 0;
@@ -77,8 +78,9 @@ export const CourierInfoBoxText = styled.div`
 
 export const CourierBoxContainer = styled(Col)`
   display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
   color: white;
 
   svg {
