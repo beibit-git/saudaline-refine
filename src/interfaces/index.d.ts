@@ -151,6 +151,8 @@ export interface IOrderDetails {
   id: number;
   price: number;
   quantity: number;
+  discount: number;
+  discountPrice: number;
 }
 
 export interface IOrder {
@@ -162,6 +164,8 @@ export interface IOrder {
   details: IOrderDetails[];
   provider: IProvider;
   totalAmount: number;
+  totalAmountWithDiscount: number;
+  totalDiscount: number;
   totalQuantity: number;
   updated: Date;
 }
