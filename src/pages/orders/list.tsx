@@ -57,7 +57,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
           }}
         />
         <Table.Column
-          dataIndex="totalAmount"
+          dataIndex="totalAmountWithDiscount"
           title="Общая сумма (₸)"
           render={(value) => {
             return <p>{value} ₸</p>;
