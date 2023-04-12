@@ -346,7 +346,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           dataIndex="price"
           title="Цена"
           render={(value, record) => (
-            <Text style={{ fontWeight: 800 }}>{record?.product?.price} ₸</Text>
+            <Text style={{ fontWeight: 800 }}>{record?.price} ₸</Text>
           )}
         />
         <Table.Column<IOrderDetails>
@@ -374,13 +374,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           render={(value, record) => (
             <Text style={{ fontWeight: 800 }}>
               {record?.discount != 0 ? (
-                <>
-                  {record?.product.price -
-                    Math.round(
-                      (record?.product.price / 100) * record?.discount
-                    )}{" "}
-                  ₸
-                </>
+                <>{record?.priceWithDiscount} ₸</>
               ) : (
                 <>-</>
               )}
@@ -397,9 +391,9 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           render={(value, record) => (
             <Text style={{ fontWeight: 800 }}>
               {record?.discount != 0 ? (
-                <>{record?.discountPrice} ₸</>
+                <>{record?.sumWithDiscount} ₸</>
               ) : (
-                <>{record.price} ₸</>
+                <>{record.sum} ₸</>
               )}
             </Text>
           )}

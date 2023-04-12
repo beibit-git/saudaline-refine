@@ -152,7 +152,9 @@ export interface IOrderDetails {
   price: number;
   quantity: number;
   discount: number;
-  discountPrice: number;
+  sumWithDiscount: number;
+  sum: number;
+  priceWithDiscount: number;
 }
 
 export interface IOrder {
