@@ -38,6 +38,8 @@ p, ROLE_ADMIN, provider-category, (list)|(create)
 p, ROLE_ADMIN, provider-category/*, (edit)|(show)|(delete)
 p, ROLE_ADMIN, provider-category/*, field
 
+p, ROLE_ADMIN, tariff-request, (list)
+
 p, ROLE_PROVIDER, categories, (list)|(create)
 p, ROLE_PROVIDER, categories/*, (edit)|(show)|(delete)
 p, ROLE_PROVIDER, categories/*, field

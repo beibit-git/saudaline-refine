@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { CanAccess, Refine, HttpError } from "@refinedev/core";
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { notificationProvider, Layout, ErrorComponent } from "@refinedev/antd";
@@ -24,6 +25,7 @@ import {
   ProductShow,
 } from "pages/products";
 import { OrderList, OrderShow } from "pages/orders";
+import { TariffRequestList } from "pages/tariffRequest";
 import {
   PromotionList,
   PromotionShow,
@@ -40,9 +42,11 @@ import {
 import { YMaps } from "react-yandex-maps";
 import { RegionList } from "pages/regions";
 import authProvider from "providers/authProvider";
+import { AESDecrypt } from "common/Crypto-Helper";
 import accessControlProvider from "providers/accessControlProvider";
 import Constants from "common/constants";
 import { ConfigProvider } from "contexts";
+import { ModalView } from "components/tariffModal";
 const axiosInstance = axios.create();
 const API_URL = Constants.API_BASE_URL!;
 
@@ -66,10 +70,52 @@ const App: React.FC = () => {
     }
   );
 
+  const [myTariff, setMyTariff] = useState(0);
+  const [myBalance, setMyBalance] = useState(1);
+  const [tariffs, setTariffs] = useState(null);
+  const [role, setRole] = useState();
+
+  const itemString = localStorage.getItem("user");
+
+  const authAxios = axios.create({
+    baseURL: Constants.API_BASE_URL,
+    timeout: 300000,
+  });
+
+  authAxios.interceptors.request.use(
+    (request) => {
+      request.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+      return request;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  async function checking() {
+    return await authAxios.get(
+      `${Constants.API_BASE_URL}/provider/get-provider-balance`
+    );
+  }
+
+  useEffect(() => {
+    if (itemString) {
+      const user = JSON.parse(itemString);
+      setRole(AESDecrypt(user.role.roleName));
+      if (role == "ROLE_PROVIDER") {
+        checking()
+          .then((response) => {
+            setMyTariff(response.data.tariff);
+            setMyBalance(response.data.balance);
+          })
+          .finally(() => {});
+      }
+    }
+  }, []);
+
   return (
     <BrowserRouter basename="/admin">
       <ConfigProvider>
         <YMaps>
+          <ModalView myTariff={myTariff} myBalance={myBalance} />
           <Refine
             routerProvider={routerProvider}
             dataProvider={dataProvider(API_URL)}
@@ -118,6 +164,13 @@ const App: React.FC = () => {
                 meta: {
                   label: "Категория поставщика",
                   canDelete: true,
+                },
+              },
+              {
+                name: "tariff-request",
+                list: "/tariff-request",
+                meta: {
+                  label: "Запросы тарифов",
                 },
               },
               {
@@ -215,6 +268,9 @@ const App: React.FC = () => {
                   <Route path="show/:id" element={<PromotionShow />} />
                   <Route path="edit/:id" element={<PromotionEdit />} />
                   <Route path="create" element={<PromotionCreate />} />
+                </Route>
+                <Route path="tariff-request">
+                  <Route index element={<TariffRequestList />} />
                 </Route>
                 <Route path="*" element={<ErrorComponent />} />
               </Route>

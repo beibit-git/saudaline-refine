@@ -13,9 +13,6 @@ export const OrderStatus: React.FC<OrderStatusProps> = ({ status }) => {
       color = "orange";
       text = "Отклонено поставщиком";
       break;
-    // case "APPROVED":
-    //     color = "cyan";
-    //     break;
     case "NEW":
       color = "green";
       text = "Ожидающий";

@@ -172,6 +172,22 @@ export interface IOrder {
   updated: Date;
 }
 
+export interface ITariff {
+  id: number;
+  title: string;
+  sum: number;
+}
+
+export interface ITariffRequest {
+  id: number;
+  status: "NEW" | "PAID" | "UNPAID";
+  created: Date;
+  provider: IProvider;
+  tariff: ITariff;
+  tel: string;
+  sum: number;
+}
+
 export interface ICustomer {
   address: string;
   alcoholLicense: string;

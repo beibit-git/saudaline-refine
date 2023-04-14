@@ -1,15 +1,8 @@
-import { useContext } from "react";
 import { useGetIdentity } from "@refinedev/core";
-import {
-  Layout as AntdLayout,
-  Space,
-  Avatar,
-  Typography,
-  Switch,
-  Button,
-} from "antd";
+import { Layout as AntdLayout, Space, Avatar, Typography, Button } from "antd";
 import { IconMoon, IconSun } from "components/icons";
 import { useConfigProvider } from "contexts";
+import { ModalView } from "components/tariffModal";
 
 const { Text } = Typography;
 
@@ -22,10 +15,6 @@ type IUser = {
 export const Header: React.FC = () => {
   const { data: user } = useGetIdentity<IUser>();
   const { mode, setMode } = useConfigProvider();
-  // const { mode, setMode } = useContext(ColorModeContext);
-  function handleChangeMode() {
-    mode === "light" ? setMode("dark") : setMode("light");
-  }
 
   return (
     <AntdLayout.Header
@@ -38,6 +27,7 @@ export const Header: React.FC = () => {
         height: "64px",
       }}
     >
+      <ModalView />
       <Space>
         <Button
           style={{
@@ -51,12 +41,6 @@ export const Header: React.FC = () => {
             setMode(mode === "light" ? "dark" : "light");
           }}
         />
-        {/* <Switch
-          checkedChildren="🌛"
-          unCheckedChildren="🔆"
-          onChange={handleChangeMode}
-          defaultChecked={mode === "dark"}
-        /> */}
         <Space style={{ marginLeft: "8px" }}>
           {user?.name && (
             <Text style={{ color: "black" }} strong>
